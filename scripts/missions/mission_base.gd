@@ -12,8 +12,9 @@ var guided := true
 
 var stage: Control
 var cables: CableLayer
-var actions: HBoxContainer
+var actions: HFlowContainer
 var _act_panel: PanelContainer
+var _bubble_panel: PanelContainer
 var bit: BitView
 var bubble: Label
 var title_label: Label
@@ -136,54 +137,69 @@ func _build_layout() -> void:
 	cables = CableLayer.new()
 	stage.add_child(cables)
 
-	# ---- baixo
-	var bottom := HBoxContainer.new()
-	bottom.add_theme_constant_override("separation", 12)
-	root.add_child(bottom)
+	# ---- baixo: uma barra só — opções | balão do Bit (ocupa o espaço livre) | Bit | ajuda
 	_act_panel = PanelContainer.new()
-	_act_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_act_panel.custom_minimum_size = Vector2(0, 130)
-	bottom.add_child(_act_panel)
-	actions = HBoxContainer.new()
-	actions.alignment = BoxContainer.ALIGNMENT_CENTER
-	actions.add_theme_constant_override("separation", 16)
-	_act_panel.add_child(actions)
+	var bar_style := StyleBoxFlat.new()
+	bar_style.bg_color = Palette.FRAME
+	bar_style.border_color = Palette.FRAME_DARK
+	bar_style.set_border_width_all(4)
+	bar_style.set_corner_radius_all(3)
+	for side in ["left", "right", "top", "bottom"]:
+		bar_style.set("content_margin_" + side, 8)
+	_act_panel.add_theme_stylebox_override("panel", bar_style)
+	root.add_child(_act_panel)
+	var bottom := HBoxContainer.new()
+	bottom.add_theme_constant_override("separation", 10)
+	_act_panel.add_child(bottom)
 
-	var bit_box := HBoxContainer.new()
-	bit_box.add_theme_constant_override("separation", 8)
-	bottom.add_child(bit_box)
-	var bubble_panel := PanelContainer.new()
-	bubble_panel.custom_minimum_size = Vector2(400, 0)
+	actions = HFlowContainer.new()   # quebra em duas linhas quando há muitas opções
+	actions.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	actions.size_flags_stretch_ratio = 2.4
+	actions.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	actions.alignment = FlowContainer.ALIGNMENT_CENTER
+	actions.add_theme_constant_override("h_separation", 12)
+	actions.add_theme_constant_override("v_separation", 8)
+	bottom.add_child(actions)
+
+	_bubble_panel = PanelContainer.new()
+	_bubble_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_bubble_panel.custom_minimum_size = Vector2(300, 92)
 	var bs := StyleBoxFlat.new()
 	bs.bg_color = Color("#fffbe6")
 	bs.border_color = Palette.FRAME_DARK
 	bs.set_border_width_all(4)
-	bs.border_width_bottom = 7
 	bs.set_corner_radius_all(3)
 	bs.content_margin_left = 16
 	bs.content_margin_right = 16
-	bs.content_margin_top = 10
-	bs.content_margin_bottom = 10
-	bubble_panel.add_theme_stylebox_override("panel", bs)
-	bit_box.add_child(bubble_panel)
+	bs.content_margin_top = 8
+	bs.content_margin_bottom = 8
+	_bubble_panel.add_theme_stylebox_override("panel", bs)
+	# pontinha do balão apontando para o Bit
+	_bubble_panel.draw.connect(func():
+		var r := _bubble_panel.size
+		var y := r.y / 2.0
+		_bubble_panel.draw_colored_polygon(PackedVector2Array([Vector2(r.x - 3, y - 12), Vector2(r.x + 12, y), Vector2(r.x - 3, y + 12)]), Palette.FRAME_DARK)
+		_bubble_panel.draw_colored_polygon(PackedVector2Array([Vector2(r.x - 5, y - 7), Vector2(r.x + 4, y), Vector2(r.x - 5, y + 7)]), Color("#fffbe6")))
+	bottom.add_child(_bubble_panel)
 	bubble = Label.new()
 	bubble.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	bubble.custom_minimum_size = Vector2(368, 0)
 	bubble.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	bubble_panel.add_child(bubble)
-	var bit_col := VBoxContainer.new()
-	bit_col.alignment = BoxContainer.ALIGNMENT_CENTER
-	bit_box.add_child(bit_col)
+	bubble.size_flags_vertical = Control.SIZE_FILL
+	bubble.add_theme_font_size_override("font_size", 20)
+	_bubble_panel.add_child(bubble)
+
 	var bit_holder := Control.new()
-	bit_holder.custom_minimum_size = Vector2(110, 96)
-	bit_col.add_child(bit_holder)
+	bit_holder.custom_minimum_size = Vector2(100, 92)
+	bit_holder.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	bottom.add_child(bit_holder)
 	bit = BitView.new()
-	bit.position = Vector2(0, -12)
+	bit.position = Vector2(-5, -14)
 	bit_holder.add_child(bit)
-	help_button = BigButton.new("Preciso de ajuda", "help", "star", 60)
-	help_button.add_theme_font_size_override("font_size", 20)
+	help_button = BigButton.new("Preciso\nde ajuda", "help", "star", 92)
+	help_button.add_theme_font_size_override("font_size", 21)
+	help_button.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	help_button.pressed.connect(_on_help)
-	bit_col.add_child(help_button)
+	bottom.add_child(help_button)
 
 	# ---- camadas sobrepostas
 	_build_feedback()
@@ -195,7 +211,8 @@ func _build_layout() -> void:
 	add_child(skip_button)
 	pointer = PointerView.new()
 	add_child(pointer)
-	use_button = BigButton.new("Usar", "play", "star", 70)
+	use_button = BigButton.new("Usar", "play", "star", 58)
+	use_button.add_theme_font_size_override("font_size", 20)
 	use_button.visible = false
 	use_button.z_index = 30
 	use_button.pressed.connect(_use_near)
@@ -246,8 +263,13 @@ func floor_point(rel: Vector2) -> Vector2:
 
 func _process(_d: float) -> void:
 	_update_walker(_d)
-	# painel de ações some quando não há opções (a tarefa é clicar no cenário)
-	_act_panel.self_modulate.a = 1.0 if actions.get_child_count() > 0 else 0.0
+	# opções somem quando não há (a tarefa é clicar no cenário) e o balão ocupa o espaço
+	var has_actions := false
+	for c in actions.get_children():
+		if not c.is_queued_for_deletion():
+			has_actions = true
+			break
+	actions.visible = has_actions
 	for n in _placed:
 		if is_instance_valid(n):
 			n.position = (floor_point(_placed[n]) - n.size / 2.0).round()
@@ -340,8 +362,13 @@ func _update_walker(delta: float) -> void:
 		if use_button.text != label:
 			use_button.text = label
 			use_button.reset_size()
+		# flutua sobre a cabeça do técnico (dentro da sala)
 		var r2: Rect2 = stage.get_global_rect()
-		use_button.global_position = Vector2(r2.end.x - use_button.size.x - 16, r2.position.y + 74)
+		var head: Vector2 = stage.get_global_transform() * (walker.position + Vector2(walker.size.x / 2.0, 0))
+		var pos := head - Vector2(use_button.size.x / 2.0, use_button.size.y + 6)
+		pos.x = clampf(pos.x, r2.position.x + 8, r2.end.x - use_button.size.x - 8)
+		pos.y = clampf(pos.y, r2.position.y + 8, r2.end.y - use_button.size.y - 8)
+		use_button.global_position = pos.round()
 
 
 func _use_near() -> void:
@@ -416,8 +443,8 @@ func clear_actions() -> void:
 
 
 func add_action(text: String, icon: String, callback: Callable, variant: String = "primary") -> BigButton:
-	var b := BigButton.new(text, icon, variant, 84)
-	b.custom_minimum_size.x = 220
+	var b := BigButton.new(text, icon, variant, 72)
+	b.custom_minimum_size.x = 200
 	b.pressed.connect(func():
 		if busy:
 			return
