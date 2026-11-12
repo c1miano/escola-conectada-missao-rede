@@ -5,6 +5,10 @@ extends VBoxContainer
 
 signal clicked(device: DeviceView)
 
+## Quando definido (pela missão), o clique primeiro faz o personagem andar até o equipamento.
+## Assinatura: func(alvo: Control, acao: Callable)
+static var interceptor: Callable = Callable()
+
 var kind := "pc"
 var device_id := ""
 var online := false:
@@ -108,10 +112,22 @@ func _process(delta: float) -> void:
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		accept_event()
-		clicked.emit(self)
+		use()
 	elif event.is_action_pressed("ui_accept"):
 		accept_event()
+		use()
+
+
+## Usa o equipamento (passando antes pelo personagem, se houver).
+func use() -> void:
+	if interceptor.is_valid():
+		interceptor.call(self, func(): clicked.emit(self))
+	else:
 		clicked.emit(self)
+
+
+func is_interactive() -> bool:
+	return is_visible_in_tree() and clicked.get_connections().size() > 0
 
 
 func _notification(what: int) -> void:

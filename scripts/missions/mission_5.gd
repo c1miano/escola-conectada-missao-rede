@@ -244,12 +244,9 @@ func _event_lamp() -> void:
 func _event_presence() -> void:
 	clear_actions()
 	person = Control.new()
-	person.custom_minimum_size = Vector2(60, 110)
-	person.draw.connect(func():
-		person.draw_circle(Vector2(30, 18), 16, Color("#f2c29b"))
-		person.draw_rect(Rect2(Vector2(12, 36), Vector2(36, 46)), Palette.PRIMARY)
-		person.draw_rect(Rect2(Vector2(14, 82), Vector2(12, 26)), Palette.DEVICE_DARK)
-		person.draw_rect(Rect2(Vector2(34, 82), Vector2(12, 26)), Palette.DEVICE_DARK))
+	person.custom_minimum_size = Vector2(64, 64)
+	person.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	person.draw.connect(func(): Sprites.draw(person, "visitante", Vector2.ZERO, 4))
 	place(person, Vector2(0.98, 0.62))
 	var t := animate("m5_presenca")
 	t.tween_method(func(x: float): move_to(person, Vector2(x, 0.62)), 0.98, 0.64, 1.4)

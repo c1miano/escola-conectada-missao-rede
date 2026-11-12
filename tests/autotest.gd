@@ -84,6 +84,22 @@ func run_mission(id: int, mode: String) -> void:
 
 # ------------------------------------------------------------- soluções
 func solve_1(ms) -> void:
+	# personagem: clica no Computador 3 -> anda até ele -> fica selecionado
+	ms.devices[2].use()
+	await wait(0.4)
+	await shot("m1_andando")
+	await wait(2.0)
+	await shot("m1_chegou")
+	if ms.devices[2].selected:
+		print("Personagem andou até o equipamento e usou")
+	else:
+		failures.append("andar")
+	ms.sw.use_port(3)
+	await wait(2.5)
+	if ms.links.has(ms.devices[2]):
+		print("Personagem andou até a porta do switch e ligou o cabo")
+	else:
+		failures.append("porta")
 	# erro proposital: ligar computador direto no outro
 	ms._on_device(ms.devices[0])
 	ms._on_device(ms.devices[1])
@@ -92,6 +108,10 @@ func solve_1(ms) -> void:
 	await wait(2.0)
 	var port := 0
 	for d in ms.devices:
+		if ms.links.has(d):
+			continue
+		if port == 3:
+			port = 4
 		ms._on_device(d)
 		await wait(0.2)
 		if port == 2:

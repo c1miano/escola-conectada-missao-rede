@@ -1,4 +1,4 @@
-name: Deploy no GitHub Pages
+name: Exportar e publicar (Web + Windows)
 
 on:
   push:
@@ -14,19 +14,68 @@ concurrency:
   group: pages
   cancel-in-progress: true
 
+env:
+  GODOT_VERSION: 4.7.2
+
 jobs:
-  deploy:
+  exportar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache do Godot e templates
+        id: cache-godot
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/godot
+            ~/.local/share/godot/export_templates
+          key: godot-${{ env.GODOT_VERSION }}-web-win
+
+      - name: Baixar Godot ${{ env.GODOT_VERSION }}
+        if: steps.cache-godot.outputs.cache-hit != 'true'
+        run: |
+          set -e
+          mkdir -p ~/godot && cd ~/godot
+          BASE=https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable
+          curl -sSL -o godot.zip $BASE/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip
+          unzip -q godot.zip && rm godot.zip
+          curl -sSL -o t.tpz $BASE/Godot_v${GODOT_VERSION}-stable_export_templates.tpz
+          unzip -q t.tpz && rm t.tpz
+          DEST=~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
+          mkdir -p $DEST
+          cp templates/version.txt templates/web_nothreads_*.zip templates/windows_*_x86_64.exe $DEST/
+          rm -rf templates
+
+      - name: Importar projeto
+        run: |
+          GODOT=~/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64
+          mkdir -p build/web build/windows && touch build/.gdignore
+          $GODOT --headless --import || true
+
+      - name: Exportar Web e Windows
+        run: |
+          set -e
+          GODOT=~/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64
+          $GODOT --headless --export-release "Web" build/web/index.html
+          $GODOT --headless --export-release "Windows" build/windows/EscolaConectada.exe
+          cd build/windows && zip -q ../web/EscolaConectada-Windows.zip EscolaConectada.exe
+          ls -la ../web
+
+      - uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/web
+
+  publicar:
+    needs: exportar
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/configure-pages@v5
-        with:
-          enablement: true
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: .
       - id: deployment
         uses: actions/deploy-pages@v4

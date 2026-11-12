@@ -43,6 +43,9 @@ var floor_tile := "piso_tijolo"
 var wall_items: Array = [["janela", 0.32], ["quadro", 0.52], ["relogio", 0.64], ["cartaz_rede", 0.74], ["janela", 0.86], ["extintor", 0.97]]
 var floor_items: Array = []
 var _finished := false
+var walker: Walker
+var use_button: BigButton
+var _near: Control = null          # equipamento perto do personagem
 
 
 func _init(id: int = 0) -> void:
@@ -55,7 +58,20 @@ func _ready() -> void:
 	guided = Game.is_guided()
 	_build_layout()
 	Game.record_start(mission_id)
+	DeviceView.interceptor = _walk_and_use
 	setup()
+	walker = Walker.new()
+	stage.add_child(walker)
+	_place_walker.call_deferred()
+
+
+func _exit_tree() -> void:
+	if DeviceView.interceptor == Callable(self, "_walk_and_use"):
+		DeviceView.interceptor = Callable()
+
+
+func _place_walker() -> void:
+	walker.set_feet(floor_point(Vector2(0.5, 0.45)))
 
 
 ## Implementado por cada missão.
@@ -179,6 +195,11 @@ func _build_layout() -> void:
 	add_child(skip_button)
 	pointer = PointerView.new()
 	add_child(pointer)
+	use_button = BigButton.new("Usar", "play", "star", 70)
+	use_button.visible = false
+	use_button.z_index = 30
+	use_button.pressed.connect(_use_near)
+	add_child(use_button)
 
 
 func _build_feedback() -> void:
@@ -224,6 +245,7 @@ func floor_point(rel: Vector2) -> Vector2:
 
 
 func _process(_d: float) -> void:
+	_update_walker(_d)
 	# painel de ações some quando não há opções (a tarefa é clicar no cenário)
 	_act_panel.self_modulate.a = 1.0 if actions.get_child_count() > 0 else 0.0
 	for n in _placed:
@@ -232,6 +254,110 @@ func _process(_d: float) -> void:
 	if _feedback.visible:
 		_feedback.position.x = (size.x - _feedback.size.x) / 2.0
 		_feedback.position.y = 120
+
+
+# ================================================================== personagem (andar até o equipamento)
+## Área do piso onde o personagem pode andar (coordenadas do cenário).
+func walk_bounds() -> Rect2:
+	var top := float(Room.WALL_H) + 30.0
+	return Rect2(Vector2(30, top), Vector2(stage.size.x - 60, stage.size.y - top - 8))
+
+
+## Ponto do chão em frente a um equipamento ou porta.
+func stand_point(target: Control) -> Vector2:
+	var r := target.get_global_rect()
+	var inv := stage.get_global_transform().affine_inverse()
+	var below := inv * Vector2(r.get_center().x, r.end.y + 62)
+	var b := walk_bounds()
+	if below.y > b.end.y:
+		below = inv * Vector2(r.get_center().x, r.position.y - 6)
+	return Vector2(clampf(below.x, b.position.x, b.end.x), clampf(below.y, b.position.y, b.end.y))
+
+
+## Clique num equipamento: o técnico anda até ele e só então a ação acontece.
+func _walk_and_use(target: Control, action: Callable) -> void:
+	if busy or walker == null:
+		return
+	var dest := stand_point(target)
+	if walker.feet().distance_to(dest) < 40.0:
+		action.call()
+		return
+	Sfx.play("select")
+	walker.walk_to(dest, func():
+		if is_instance_valid(target) and not busy:
+			action.call())
+
+
+func _interactives() -> Array:
+	var out: Array = []
+	for n in stage.find_children("*", "DeviceView", true, false):
+		if n.is_interactive():
+			out.append(n)
+		if n is SwitchView and n.port_clicked.get_connections().size() > 0:
+			for p in n.ports:
+				out.append(p)
+	return out
+
+
+func _update_walker(delta: float) -> void:
+	if walker == null:
+		return
+	if not walker.walking_to_target() and not busy:
+		var dir := Vector2.ZERO
+		if Input.is_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT):
+			dir.x -= 1
+		if Input.is_key_pressed(KEY_D) or Input.is_key_pressed(KEY_RIGHT):
+			dir.x += 1
+		if Input.is_key_pressed(KEY_W) or Input.is_key_pressed(KEY_UP):
+			dir.y -= 1
+		if Input.is_key_pressed(KEY_S) or Input.is_key_pressed(KEY_DOWN):
+			dir.y += 1
+		walker.step(dir, delta, walk_bounds())
+	# equipamento mais próximo -> botão "Usar"
+	var best: Control = null
+	var best_d := 120.0
+	var feet_g := stage.get_global_transform() * walker.feet()
+	for n in _interactives():
+		var r: Rect2 = n.get_global_rect()
+		var d := feet_g.distance_to(Vector2(r.get_center().x, clampf(feet_g.y, r.position.y, r.end.y + 30)))
+		if d < best_d:
+			best_d = d
+			best = n
+	_near = best if not walker.walking_to_target() else null
+	use_button.visible = _near != null and not busy and not _finished
+	if use_button.visible:
+		var label := "Usar"
+		if _near is DeviceView:
+			label = "Usar: " + (_near as DeviceView).name_label.text
+		elif _near is Button:
+			label = "Usar: " + str((_near as Button).text).get_slice("\n", 0)
+		if use_button.text != label:
+			use_button.text = label
+			use_button.reset_size()
+		var r2: Rect2 = stage.get_global_rect()
+		use_button.global_position = Vector2(r2.end.x - use_button.size.x - 16, r2.position.y + 74)
+
+
+func _use_near() -> void:
+	if _near == null or busy:
+		return
+	if _near is DeviceView:
+		(_near as DeviceView).use()
+	elif _near is Button:
+		(_near as Button).pressed.emit()
+
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode in [KEY_LEFT, KEY_RIGHT, KEY_UP, KEY_DOWN]:
+			# setas andam com o personagem (Tab troca o foco dos botões)
+			get_viewport().set_input_as_handled()
+		elif event.keycode == KEY_E and use_button.visible:
+			get_viewport().set_input_as_handled()
+			_use_near()
+		elif event.keycode in [KEY_SPACE, KEY_ENTER] and use_button.visible and get_viewport().gui_get_focus_owner() == null:
+			get_viewport().set_input_as_handled()
+			_use_near()
 
 
 # ================================================================== helpers para as missões

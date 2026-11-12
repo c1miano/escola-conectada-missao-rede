@@ -24,10 +24,17 @@ func _init(n_ports: int = 4, p_title: String = "Switch") -> void:
 		b.focus_mode = Control.FOCUS_ALL
 		b.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 		var idx := i
-		b.pressed.connect(func(): port_clicked.emit(idx))
+		b.pressed.connect(func(): use_port(idx))
 		row.add_child(b)
 		ports.append(b)
 		port_used.append(false)
+
+
+func use_port(idx: int) -> void:
+	if DeviceView.interceptor.is_valid():
+		DeviceView.interceptor.call(ports[idx], func(): port_clicked.emit(idx))
+	else:
+		port_clicked.emit(idx)
 
 
 func set_port_used(i: int, used: bool) -> void:
