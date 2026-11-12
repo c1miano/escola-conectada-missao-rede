@@ -15,7 +15,7 @@ var cables: CableLayer
 var actions: HFlowContainer
 var _act_panel: PanelContainer
 var _bubble_panel: PanelContainer
-var bit: BitView
+var bit: BitSpeaker
 var bubble: Label
 var title_label: Label
 var objective_label: Label
@@ -137,69 +137,61 @@ func _build_layout() -> void:
 	cables = CableLayer.new()
 	stage.add_child(cables)
 
-	# ---- baixo: uma barra só — opções | balão do Bit (ocupa o espaço livre) | Bit | ajuda
-	_act_panel = PanelContainer.new()
-	var bar_style := StyleBoxFlat.new()
-	bar_style.bg_color = Palette.FRAME
-	bar_style.border_color = Palette.FRAME_DARK
-	bar_style.set_border_width_all(4)
-	bar_style.set_corner_radius_all(3)
-	for side in ["left", "right", "top", "bottom"]:
-		bar_style.set("content_margin_" + side, 8)
-	_act_panel.add_theme_stylebox_override("panel", bar_style)
-	root.add_child(_act_panel)
-	var bottom := HBoxContainer.new()
-	bottom.add_theme_constant_override("separation", 10)
-	_act_panel.add_child(bottom)
-
-	actions = HFlowContainer.new()   # quebra em duas linhas quando há muitas opções
-	actions.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	actions.size_flags_stretch_ratio = 2.4
-	actions.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	actions.alignment = FlowContainer.ALIGNMENT_CENTER
-	actions.add_theme_constant_override("h_separation", 12)
-	actions.add_theme_constant_override("v_separation", 8)
-	bottom.add_child(actions)
+	# ---- dentro da sala: Bit (assistente), balão, ajuda e painel de opções flutuante
+	bit = BitSpeaker.new()
+	bit.z_index = 8
+	stage.add_child(bit)
 
 	_bubble_panel = PanelContainer.new()
-	_bubble_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_bubble_panel.custom_minimum_size = Vector2(300, 92)
+	_bubble_panel.z_index = 8
+	_bubble_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var bs := StyleBoxFlat.new()
 	bs.bg_color = Color("#fffbe6")
 	bs.border_color = Palette.FRAME_DARK
 	bs.set_border_width_all(4)
+	bs.border_width_bottom = 7
 	bs.set_corner_radius_all(3)
-	bs.content_margin_left = 16
-	bs.content_margin_right = 16
+	bs.content_margin_left = 14
+	bs.content_margin_right = 14
 	bs.content_margin_top = 8
 	bs.content_margin_bottom = 8
 	_bubble_panel.add_theme_stylebox_override("panel", bs)
-	# pontinha do balão apontando para o Bit
+	# pontinha do balão apontando para baixo, para o Bit
 	_bubble_panel.draw.connect(func():
 		var r := _bubble_panel.size
-		var y := r.y / 2.0
-		_bubble_panel.draw_colored_polygon(PackedVector2Array([Vector2(r.x - 3, y - 12), Vector2(r.x + 12, y), Vector2(r.x - 3, y + 12)]), Palette.FRAME_DARK)
-		_bubble_panel.draw_colored_polygon(PackedVector2Array([Vector2(r.x - 5, y - 7), Vector2(r.x + 4, y), Vector2(r.x - 5, y + 7)]), Color("#fffbe6")))
-	bottom.add_child(_bubble_panel)
+		var x := r.x - 64.0
+		_bubble_panel.draw_colored_polygon(PackedVector2Array([Vector2(x - 14, r.y - 4), Vector2(x, r.y + 16), Vector2(x + 14, r.y - 4)]), Palette.FRAME_DARK)
+		_bubble_panel.draw_colored_polygon(PackedVector2Array([Vector2(x - 8, r.y - 8), Vector2(x, r.y + 6), Vector2(x + 8, r.y - 8)]), Color("#fffbe6")))
+	stage.add_child(_bubble_panel)
 	bubble = Label.new()
 	bubble.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	bubble.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	bubble.size_flags_vertical = Control.SIZE_FILL
+	bubble.custom_minimum_size = Vector2(360, 0)
 	bubble.add_theme_font_size_override("font_size", 20)
 	_bubble_panel.add_child(bubble)
 
-	var bit_holder := Control.new()
-	bit_holder.custom_minimum_size = Vector2(100, 92)
-	bit_holder.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	bottom.add_child(bit_holder)
-	bit = BitView.new()
-	bit.position = Vector2(-5, -14)
-	bit_holder.add_child(bit)
-	help_button = BigButton.new("Preciso\nde ajuda", "help", "star", 92)
-	help_button.add_theme_font_size_override("font_size", 21)
-	help_button.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	help_button = BigButton.new("Preciso\nde ajuda", "help", "star", 84)
+	help_button.add_theme_font_size_override("font_size", 20)
+	help_button.z_index = 8
 	help_button.pressed.connect(_on_help)
-	bottom.add_child(help_button)
+	stage.add_child(help_button)
+
+	_act_panel = PanelContainer.new()
+	_act_panel.z_index = 9
+	var ps := StyleBoxFlat.new()
+	ps.bg_color = Color(Palette.CREAM, 0.96)
+	ps.border_color = Palette.FRAME_DARK
+	ps.set_border_width_all(4)
+	ps.border_width_bottom = 8
+	ps.set_corner_radius_all(3)
+	for side in ["left", "right", "top", "bottom"]:
+		ps.set("content_margin_" + side, 10)
+	_act_panel.add_theme_stylebox_override("panel", ps)
+	stage.add_child(_act_panel)
+	actions = HFlowContainer.new()
+	actions.alignment = FlowContainer.ALIGNMENT_CENTER
+	actions.add_theme_constant_override("h_separation", 12)
+	actions.add_theme_constant_override("v_separation", 8)
+	_act_panel.add_child(actions)
 
 	# ---- camadas sobrepostas
 	_build_feedback()
@@ -263,19 +255,46 @@ func floor_point(rel: Vector2) -> Vector2:
 
 func _process(_d: float) -> void:
 	_update_walker(_d)
-	# opções somem quando não há (a tarefa é clicar no cenário) e o balão ocupa o espaço
-	var has_actions := false
-	for c in actions.get_children():
-		if not c.is_queued_for_deletion():
-			has_actions = true
-			break
-	actions.visible = has_actions
+	_layout_overlays()
 	for n in _placed:
 		if is_instance_valid(n):
 			n.position = (floor_point(_placed[n]) - n.size / 2.0).round()
 	if _feedback.visible:
 		_feedback.position.x = (size.x - _feedback.size.x) / 2.0
 		_feedback.position.y = 120
+
+
+# ================================================================== Bit, balão, ajuda e opções dentro da sala
+func _layout_overlays() -> void:
+	var sz := stage.size
+	if sz.y < 100:
+		return
+	# Bit no canto inferior direito, ajuda à esquerda dele
+	bit.position = Vector2(sz.x - bit.size.x - 18, sz.y - bit.size.y - 6).round()
+	help_button.reset_size()
+	help_button.position = Vector2(bit.position.x - help_button.size.x - 10, sz.y - help_button.size.y - 14).round()
+	# balão acima do Bit (some quando não há texto)
+	_bubble_panel.visible = bubble.text.strip_edges() != ""
+	var bw := minf(460.0, sz.x * 0.42)
+	bubble.custom_minimum_size.x = bw - 28
+	_bubble_panel.reset_size()
+	_bubble_panel.position = Vector2(sz.x - _bubble_panel.size.x - 14, bit.position.y - _bubble_panel.size.y - 10).round()
+	# painel de opções: embaixo, no meio da área livre (só quando há opções)
+	var has_actions := false
+	for c in actions.get_children():
+		if not c.is_queued_for_deletion():
+			has_actions = true
+			break
+	_act_panel.visible = has_actions
+	if has_actions:
+		var free_w := help_button.position.x - 24
+		var content := 0.0
+		for c in actions.get_children():
+			if not c.is_queued_for_deletion():
+				content += (c as Control).get_combined_minimum_size().x + 12.0
+		actions.custom_minimum_size.x = minf(free_w - 24, content)
+		_act_panel.reset_size()
+		_act_panel.position = Vector2(maxf(12, (free_w - _act_panel.size.x) / 2.0), sz.y - _act_panel.size.y - 10).round()
 
 
 # ================================================================== personagem (andar até o equipamento)
@@ -396,6 +415,8 @@ func _input(event: InputEvent) -> void:
 # ================================================================== helpers para as missões
 ## Coloca um elemento no cenário. rel = posição relativa (0..1) do centro.
 func place(node: Control, rel: Vector2) -> Control:
+	if node is PanelContainer:
+		node.z_index = 6       # painéis de informação ficam na frente do técnico
 	stage.add_child(node)
 	_placed[node] = rel
 	node.reset_size()
@@ -419,6 +440,7 @@ func set_objective(text: String) -> void:
 func say(text: String, mood: String = "normal") -> void:
 	bubble.text = text
 	bit.mood = mood
+	bit.talk(text)
 	Voice.say(text)
 
 
@@ -665,9 +687,10 @@ func story(text: String, on_start: Callable) -> void:
 	var row := HBoxContainer.new()
 	box.add_child(row)
 	var holder := Control.new()
-	holder.custom_minimum_size = Vector2(120, 130)
+	holder.custom_minimum_size = Vector2(80, 140)
 	row.add_child(holder)
-	var b := BitView.new()
+	var b := BitSpeaker.new()
+	b.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	holder.add_child(b)
 	var col := VBoxContainer.new()
 	col.size_flags_horizontal = Control.SIZE_EXPAND_FILL

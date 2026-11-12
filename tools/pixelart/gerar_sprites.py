@@ -759,6 +759,42 @@ def bit(mood):
     return finish(c)
 
 
+def speaker(mood, lit):
+    """Bit como assistente inteligente (caixinha de som com anel de luz e o rosto do Bit), 16x24."""
+    b, m, on, t = R["azul"], R["metal"], R["tela_on"], R["tela"]
+    c = C(16, 24)
+    c.ground_shadow(2, 22, 12, 2)
+    # corpo cilíndrico: faixas verticais (luz da esquerda)
+    for x in range(2, 14):
+        band = 3 if x < 4 else 2 if x < 8 else 1 if x < 12 else 0
+        c.vline(x, 5, 16, b[band])
+    c.dither(2, 15, 12, 6, b[1], b[0], 0.35)          # tecido escurece embaixo
+    c.hline(3, 20, 10, m[1])                           # base
+    # tampo elíptico com o anel de luz
+    for y in range(1, 7):
+        for x in range(1, 15):
+            dx, dy = (x + 0.5 - 8) / 6.5, (y + 0.5 - 4) / 2.6
+            d = dx * dx + dy * dy
+            if d <= 1.0:
+                if d > 0.45:
+                    c.px(x, y, (on[3] if dy < 0 else on[2]) if lit else m[2])
+                else:
+                    c.px(x, y, m[1] if not (dx < 0 and dy < 0) else m[2])
+    # rosto (tela)
+    c.rect(4, 9, 8, 5, t[0])
+    eye = on[3]
+    if mood == "feliz":
+        c.hline(5, 10, 2, eye); c.hline(9, 10, 2, eye)
+        c.px(5, 12, eye); c.hline(6, 12, 4, eye); c.px(10, 12, eye)
+    elif mood == "pensando":
+        c.hline(5, 11, 2, eye); c.hline(9, 10, 2, eye)
+        c.hline(7, 12, 3, on[2])
+    else:
+        c.rect(5, 10, 2, 2, eye); c.rect(9, 10, 2, 2, eye)
+        c.hline(6, 12, 4, on[2])
+    return finish(c)
+
+
 # ------------------------------------------------------------------ validação (como no td2d)
 def validate(sprites, walks, max_colors=24):
     report = {"sprites": {}, "problemas": []}
@@ -805,6 +841,9 @@ def main():
         "rack": rack(), "porta": door(), "impressora": printer(), "sensor_temp": thermometer(),
         "bit": bit("normal"), "bit_feliz": bit("feliz"), "bit_pensando": bit("pensando"),
     }
+    for mood in ("normal", "feliz", "pensando"):
+        sprites[f"bit_caixa_{mood}"] = speaker(mood, True)
+        sprites[f"bit_caixa_{mood}_apagado"] = speaker(mood, False)
     for on in (False, True):
         suf = "_on" if on else "_off"
         sprites["pc" + suf] = pc(on)

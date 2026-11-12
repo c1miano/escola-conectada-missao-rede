@@ -70,7 +70,7 @@ func _install(kind: String, title: String) -> void:
 	iot.clicked.connect(_on_iot)
 	if kind == "sensor_temp":
 		iot.value_text = "24 °C"
-	place(iot, Vector2(0.78, 0.50))
+	place(iot, Vector2(0.76, 0.40))
 	correct("Dispositivo instalado!", "Escolheu um dispositivo de Internet das Coisas (%s)" % title.to_lower())
 	say("O %s precisa se conectar à rede para mandar informações. Ele usa Wi-Fi. Primeiro, ligue o ponto de acesso no switch." % title.to_lower())
 	set_objective("Ligar o ponto de acesso Wi-Fi ao switch.")

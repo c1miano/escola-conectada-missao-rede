@@ -216,6 +216,54 @@
       "cores": 10,
       "pixels_soltos": 0
     },
+    "bit_caixa_normal": {
+      "tamanho": [
+        16,
+        24
+      ],
+      "cores": 11,
+      "pixels_soltos": 6
+    },
+    "bit_caixa_normal_apagado": {
+      "tamanho": [
+        16,
+        24
+      ],
+      "cores": 11,
+      "pixels_soltos": 6
+    },
+    "bit_caixa_feliz": {
+      "tamanho": [
+        16,
+        24
+      ],
+      "cores": 11,
+      "pixels_soltos": 6
+    },
+    "bit_caixa_feliz_apagado": {
+      "tamanho": [
+        16,
+        24
+      ],
+      "cores": 10,
+      "pixels_soltos": 6
+    },
+    "bit_caixa_pensando": {
+      "tamanho": [
+        16,
+        24
+      ],
+      "cores": 11,
+      "pixels_soltos": 6
+    },
+    "bit_caixa_pensando_apagado": {
+      "tamanho": [
+        16,
+        24
+      ],
+      "cores": 11,
+      "pixels_soltos": 6
+    },
     "pc_off": {
       "tamanho": [
         32,

@@ -68,7 +68,7 @@ func _build_console() -> void:
 
 func _build_browser() -> void:
 	browser = PanelContainer.new()
-	browser.custom_minimum_size = Vector2(560, 0)
+	browser.custom_minimum_size = Vector2(480, 0)
 	var v := VBoxContainer.new()
 	browser.add_child(v)
 	browser_bar = Label.new()
@@ -77,13 +77,13 @@ func _build_browser() -> void:
 	v.add_child(browser_bar)
 	browser_page = Label.new()
 	browser_page.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	browser_page.custom_minimum_size = Vector2(520, 0)
+	browser_page.custom_minimum_size = Vector2(450, 0)
 	browser_page.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	browser_page.add_theme_font_size_override("font_size", 30)
 	browser_page.add_theme_color_override("font_color", Palette.PRIMARY_DARK)
 	browser_page.text = "Feira de Tecnologia\nEscola Conectada\n\nBem-vindos! Projetos, robôs e muito mais."
 	v.add_child(browser_page)
-	place(browser, Vector2(0.5, 0.36))
+	place(browser, Vector2(0.42, 0.34))
 	browser.visible = false
 
 
