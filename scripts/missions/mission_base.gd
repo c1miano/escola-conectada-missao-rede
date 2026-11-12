@@ -35,9 +35,13 @@ var _anim: Tween
 var _anim_id := ""
 var _highlighted: Array = []
 var busy := false
-var room_color := Color("#dbe8f6")
+var room_color := Color("#dbe8f6")   # (não usado no visual pixel art)
 var floor_color := Color("#c9b79c")
 var place_icon := "home"
+## Visual da sala (pixel art top-down)
+var floor_tile := "piso_tijolo"
+var wall_items: Array = [["janela", 0.32], ["quadro", 0.52], ["relogio", 0.64], ["cartaz_rede", 0.74], ["janela", 0.86], ["extintor", 0.97]]
+var floor_items: Array = []
 var _finished := false
 
 
@@ -136,9 +140,10 @@ func _build_layout() -> void:
 	bubble_panel.custom_minimum_size = Vector2(400, 0)
 	var bs := StyleBoxFlat.new()
 	bs.bg_color = Color("#fffbe6")
-	bs.border_color = Palette.STAR_DARK
-	bs.set_border_width_all(3)
-	bs.set_corner_radius_all(18)
+	bs.border_color = Palette.FRAME_DARK
+	bs.set_border_width_all(4)
+	bs.border_width_bottom = 7
+	bs.set_corner_radius_all(3)
 	bs.content_margin_left = 16
 	bs.content_margin_right = 16
 	bs.content_margin_top = 10
@@ -157,7 +162,7 @@ func _build_layout() -> void:
 	bit_holder.custom_minimum_size = Vector2(110, 96)
 	bit_col.add_child(bit_holder)
 	bit = BitView.new()
-	bit.position = Vector2(0, -16)
+	bit.position = Vector2(0, -12)
 	bit_holder.add_child(bit)
 	help_button = BigButton.new("Preciso de ajuda", "help", "star", 60)
 	help_button.add_theme_font_size_override("font_size", 20)
@@ -200,18 +205,22 @@ func _build_feedback() -> void:
 
 func _draw_room() -> void:
 	var s := stage.size
-	stage.draw_rect(Rect2(Vector2.ZERO, s), room_color)
-	stage.draw_rect(Rect2(Vector2(0, s.y * 0.78), Vector2(s.x, s.y * 0.22)), floor_color)
-	stage.draw_line(Vector2(0, s.y * 0.78), Vector2(s.x, s.y * 0.78), floor_color.darkened(0.25), 4)
-	# placa com o nome do local
+	Room.draw(stage, Rect2(Vector2.ZERO, s), floor_tile, wall_items, floor_items)
+	# placa com o nome do local, na parede
 	var font := ThemeDB.fallback_font
 	var place: String = info.get("place", "")
 	var w := font.get_string_size(place, HORIZONTAL_ALIGNMENT_LEFT, -1, 20).x
-	var sign := Rect2(Vector2(14, 10), Vector2(w + 60, 38))
-	stage.draw_rect(sign, Color("#fff8dc"))
-	stage.draw_rect(sign, Palette.STAR_DARK, false, 3)
-	Icons.draw(stage, place_icon, sign.position + Vector2(22, 19), 12, Palette.PRIMARY_DARK)
-	stage.draw_string(font, sign.position + Vector2(40, 26), place, HORIZONTAL_ALIGNMENT_LEFT, -1, 20, Palette.TEXT)
+	var sign := Rect2(Vector2(14, 22), Vector2(w + 60, 42))
+	stage.draw_rect(sign, Palette.CREAM)
+	stage.draw_rect(sign, Palette.FRAME_DARK, false, 4)
+	Icons.draw(stage, place_icon, sign.position + Vector2(24, 21), 12, Palette.PRIMARY_DARK)
+	stage.draw_string(font, sign.position + Vector2(42, 28), place, HORIZONTAL_ALIGNMENT_LEFT, -1, 20, Palette.TEXT)
+
+
+## Converte posição relativa (0..1) para a área do piso.
+func floor_point(rel: Vector2) -> Vector2:
+	var top := float(Room.WALL_H)
+	return Vector2(rel.x * stage.size.x, top + rel.y * (stage.size.y - top))
 
 
 func _process(_d: float) -> void:
@@ -219,7 +228,7 @@ func _process(_d: float) -> void:
 	_act_panel.self_modulate.a = 1.0 if actions.get_child_count() > 0 else 0.0
 	for n in _placed:
 		if is_instance_valid(n):
-			n.position = (_placed[n] as Vector2) * stage.size - n.size / 2.0
+			n.position = (floor_point(_placed[n]) - n.size / 2.0).round()
 	if _feedback.visible:
 		_feedback.position.x = (size.x - _feedback.size.x) / 2.0
 		_feedback.position.y = 120

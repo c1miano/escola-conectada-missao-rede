@@ -1,10 +1,10 @@
 class_name Palette
 ## Cores com bom contraste. Acerto/erro nunca dependem só da cor: sempre há ícone e texto.
 
-const BG := Color("#e8f1fb")
+const BG := Color("#2d3b70")
 const BG_DARK := Color("#1a2a4d")
-const PANEL := Color("#ffffff")
-const PANEL_BORDER := Color("#9fb3c8")
+const PANEL := Color("#fbf7ec")
+const PANEL_BORDER := Color("#2d3b70")
 const TEXT := Color("#16213e")
 const TEXT_SOFT := Color("#46546e")
 const TEXT_LIGHT := Color("#ffffff")
@@ -25,3 +25,6 @@ const DEVICE := Color("#d9e2ec")
 const DEVICE_DARK := Color("#3b4a63")
 const SCREEN := Color("#203a5c")
 const SCREEN_ON := Color("#7fdbff")
+const FRAME := Color("#5a78c2")
+const FRAME_DARK := Color("#2d3b70")
+const CREAM := Color("#fbf7ec")

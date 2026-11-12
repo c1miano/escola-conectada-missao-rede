@@ -18,6 +18,9 @@ var _tested := false
 
 
 func setup() -> void:
+	floor_tile = "piso_madeira"
+	wall_items = [["janela", 0.30], ["cartaz_wifi", 0.42], ["relogio", 0.5], ["janela", 0.62], ["cartaz_rede", 0.72]]
+	floor_items = [["estante", Vector2(0.03, 0.85)], ["estante", Vector2(0.97, 0.85)], ["estante", Vector2(0.30, 0.9)], ["estante", Vector2(0.70, 0.9)]]
 	place_icon = "report"
 	set_objective("Fazer a mensagem chegar ao servidor e abrir o site da feira.")
 	pc = DeviceView.new("pc", "Computador da biblioteca", "IP: 192.168.1.20")

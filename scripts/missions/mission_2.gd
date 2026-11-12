@@ -16,6 +16,9 @@ var sheet_panel: PanelContainer
 
 
 func setup() -> void:
+	floor_tile = "piso_madeira"
+	wall_items = [["janela", 0.30], ["cartaz_rede", 0.40], ["relogio", 0.52], ["bilhete", 0.58], ["janela", 0.72], ["quadro", 0.88]]
+	floor_items = [["arquivo", Vector2(0.975, 0.85)], ["planta", Vector2(0.62, 0.92)]]
 	place_icon = "user"
 	set_objective("Dar um endereço IP diferente para cada computador da mesma rede.")
 	sw = SwitchView.new(6)

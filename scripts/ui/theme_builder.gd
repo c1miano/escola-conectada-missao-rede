@@ -2,17 +2,18 @@ extends RefCounted
 ## Tema com botões grandes, cantos arredondados e foco bem visível (navegação por teclado).
 
 
-static func _box(bg: Color, border: Color, bw: int = 3, radius: int = 14, margin: int = 14) -> StyleBoxFlat:
+static func _box(bg: Color, border: Color, bw: int = 4, radius: int = 3, margin: int = 14) -> StyleBoxFlat:
 	var s := StyleBoxFlat.new()
 	s.bg_color = bg
 	s.border_color = border
 	s.set_border_width_all(bw)
+	s.border_width_bottom = bw + 3
 	s.set_corner_radius_all(radius)
 	s.content_margin_left = margin + 6
 	s.content_margin_right = margin + 6
 	s.content_margin_top = margin
 	s.content_margin_bottom = margin
-	s.anti_aliasing = true
+	s.anti_aliasing = false
 	return s
 
 
@@ -26,7 +27,7 @@ static func build(large_text: bool) -> Theme:
 	t.set_stylebox("hover", "Button", _box(Palette.PRIMARY_HOVER, Palette.PRIMARY_DARK))
 	t.set_stylebox("pressed", "Button", _box(Palette.PRIMARY_DARK, Palette.PRIMARY_DARK))
 	t.set_stylebox("disabled", "Button", _box(Color("#b8c2cf"), Color("#9aa5b4")))
-	var focus := _box(Color(0, 0, 0, 0), Palette.FOCUS, 5, 16)
+	var focus := _box(Color(0, 0, 0, 0), Palette.FOCUS, 5, 3)
 	focus.expand_margin_left = 4
 	focus.expand_margin_right = 4
 	focus.expand_margin_top = 4
@@ -38,8 +39,8 @@ static func build(large_text: bool) -> Theme:
 	t.set_font_size("font_size", "Button", base + 2)
 
 	# Painéis
-	t.set_stylebox("panel", "PanelContainer", _box(Palette.PANEL, Palette.PANEL_BORDER, 3, 18, 14))
-	t.set_stylebox("panel", "Panel", _box(Palette.PANEL, Palette.PANEL_BORDER, 3, 18, 14))
+	t.set_stylebox("panel", "PanelContainer", _box(Palette.PANEL, Palette.PANEL_BORDER, 4, 3, 14))
+	t.set_stylebox("panel", "Panel", _box(Palette.PANEL, Palette.PANEL_BORDER, 4, 3, 14))
 
 	# Textos
 	t.set_color("font_color", "Label", Palette.TEXT)
@@ -49,8 +50,8 @@ static func build(large_text: bool) -> Theme:
 	t.set_font_size("bold_font_size", "RichTextLabel", base)
 
 	# Campo de texto
-	t.set_stylebox("normal", "LineEdit", _box(Color.WHITE, Palette.PANEL_BORDER, 3, 10, 10))
-	t.set_stylebox("focus", "LineEdit", _box(Color.WHITE, Palette.FOCUS, 4, 10, 10))
+	t.set_stylebox("normal", "LineEdit", _box(Color.WHITE, Palette.PANEL_BORDER, 3, 2, 10))
+	t.set_stylebox("focus", "LineEdit", _box(Color.WHITE, Palette.FOCUS, 4, 2, 10))
 	t.set_color("font_color", "LineEdit", Palette.TEXT)
 	t.set_font_size("font_size", "LineEdit", base)
 	t.set_color("font_placeholder_color", "LineEdit", Color("#6b7789"))

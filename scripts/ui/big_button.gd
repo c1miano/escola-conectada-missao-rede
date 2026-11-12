@@ -32,13 +32,14 @@ func _style(bg: Color, border: Color) -> StyleBoxFlat:
 	var s := StyleBoxFlat.new()
 	s.bg_color = bg
 	s.border_color = border
-	s.set_border_width_all(3)
-	s.set_corner_radius_all(14)
+	s.set_border_width_all(4)
+	s.border_width_bottom = 8
+	s.set_corner_radius_all(3)
 	s.content_margin_top = 10
 	s.content_margin_bottom = 10
 	s.content_margin_right = 20
 	s.content_margin_left = 20 + (_icon_size * 2.0 + 10.0 if icon_kind != "" else 0.0)
-	s.anti_aliasing = true
+	s.anti_aliasing = false
 	return s
 
 
@@ -49,9 +50,9 @@ func _apply_variant() -> void:
 	var fg := Palette.TEXT_LIGHT
 	match variant:
 		"secondary":
-			bg = Palette.SECONDARY
-			hover = Color("#eef4ff")
-			border = Palette.PRIMARY
+			bg = Palette.CREAM
+			hover = Color("#fff3c4")
+			border = Palette.FRAME_DARK
 			fg = Palette.PRIMARY_DARK
 		"success":
 			bg = Palette.SUCCESS
@@ -64,7 +65,10 @@ func _apply_variant() -> void:
 			fg = Palette.TEXT
 	add_theme_stylebox_override("normal", _style(bg, border))
 	add_theme_stylebox_override("hover", _style(hover, border))
-	add_theme_stylebox_override("pressed", _style(bg.darkened(0.15), border))
+	var pressed_style := _style(bg.darkened(0.15), border)
+	pressed_style.border_width_bottom = 4
+	pressed_style.content_margin_top = 14
+	add_theme_stylebox_override("pressed", pressed_style)
 	add_theme_stylebox_override("disabled", _style(Color("#c9d1dc"), Color("#9aa5b4")))
 	for c in ["font_color", "font_hover_color", "font_pressed_color", "font_focus_color", "font_hover_pressed_color"]:
 		add_theme_color_override(c, fg)

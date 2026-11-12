@@ -10,6 +10,8 @@ var _tried_direct := false
 
 
 func setup() -> void:
+	floor_tile = "piso_tijolo"
+	floor_items = [["armario", Vector2(0.975, 0.2)], ["planta", Vector2(0.03, 0.9)], ["cadeira", Vector2(0.37, 0.48)], ["cadeira", Vector2(0.63, 0.48)]]
 	place_icon = "cable"
 	set_objective("Ligar cada equipamento a uma porta do switch (rede em estrela).")
 	var pcs := [["Computador 1", Vector2(0.13, 0.30)], ["Computador 2", Vector2(0.37, 0.24)],

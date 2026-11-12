@@ -15,6 +15,9 @@ var solved := 0
 
 
 func setup() -> void:
+	floor_tile = "piso_frio"
+	wall_items = [["cartaz_rede", 0.32], ["relogio", 0.42], ["extintor", 0.97]]
+	floor_items = [["rack", Vector2(0.62, 0.86)], ["rack", Vector2(0.66, 0.86)], ["rack", Vector2(0.97, 0.86)]]
 	place_icon = "gear"
 	room_color = Color("#d7dde8")
 	floor_color = Color("#9aa3b0")

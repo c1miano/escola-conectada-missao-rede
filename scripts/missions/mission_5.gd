@@ -18,6 +18,9 @@ var person: Control
 
 
 func setup() -> void:
+	floor_tile = "piso_tijolo"
+	wall_items = [["janela", 0.30], ["quadro", 0.62], ["cartaz_wifi", 0.74], ["relogio", 0.52]]
+	floor_items = [["mesinha", Vector2(0.55, 0.62)], ["mesinha", Vector2(0.62, 0.62)], ["mesinha", Vector2(0.55, 0.86)], ["mesinha", Vector2(0.62, 0.86)], ["planta", Vector2(0.03, 0.92)]]
 	place_icon = "wifi"
 	room_color = Color("#e3f1ea")
 	set_objective("Instalar um dispositivo inteligente e ver os dados no painel.")

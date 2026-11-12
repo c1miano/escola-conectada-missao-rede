@@ -13,6 +13,7 @@ func _ready() -> void:
 	shots_dir = parts[2] if parts.size() > 2 else ""
 	Game.settings.narracao = false
 	Game.new_game(mode)
+	await test_map_walk()
 	for s in ids:
 		await run_mission(int(s), mode)
 	print("AUTOTESTE ", "OK" if failures.is_empty() else "FALHOU: " + str(failures))
@@ -212,3 +213,22 @@ func solve_5(ms) -> void:
 	press_action("A sala esquentou")
 	await idle()
 	await shot("m5_3_alerta")
+
+
+
+## Clica na placa da missão 1 no mapa: o técnico deve andar até a porta e abrir a missão.
+func test_map_walk() -> void:
+	Game.goto("map")
+	await wait(0.6)
+	var mp = get_parent().current
+	mp.signs[1].pressed.emit()
+	await wait(0.7)
+	await shot("mapa_andando")
+	var n := 0
+	while not (get_parent().current is MissionBase) and n < 60:
+		await wait(0.1)
+		n += 1
+	if get_parent().current is MissionBase:
+		print("Mapa: técnico andou até a sala e abriu a missão")
+	else:
+		failures.append("mapa")
