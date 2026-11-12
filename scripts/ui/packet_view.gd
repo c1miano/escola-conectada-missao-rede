@@ -20,9 +20,10 @@ func _draw() -> void:
 	draw_circle(c, 26, Color(tint, 0.35))
 	Icons.draw(self, "envelope", c, 22, tint.darkened(0.2))
 	if tag != "":
-		var font := ThemeDB.fallback_font
-		var w := font.get_string_size(tag, HORIZONTAL_ALIGNMENT_LEFT, -1, 18).x
-		var box := Rect2(Vector2(size.x / 2.0 - w / 2.0 - 6, 46), Vector2(w + 12, 24))
+		var font := Game.ui_font
+		var fsz := Game.fs(18)
+		var w := font.get_string_size(tag, HORIZONTAL_ALIGNMENT_LEFT, -1, fsz).x
+		var box := Rect2(Vector2(size.x / 2.0 - w / 2.0 - 4, 44), Vector2(w + 8, fsz + 6))
 		draw_rect(box, Color.WHITE)
-		draw_rect(box, Palette.DEVICE_DARK, false, 2)
-		draw_string(font, box.position + Vector2(6, 18), tag, HORIZONTAL_ALIGNMENT_LEFT, -1, 18, Palette.TEXT)
+		draw_rect(box, Palette.DEVICE_DARK, false, 1)
+		draw_string(font, box.position + Vector2(4, fsz * 0.86 + 2), tag, HORIZONTAL_ALIGNMENT_LEFT, -1, fsz, Palette.TEXT)

@@ -24,7 +24,7 @@ func build() -> void:
 	body.text = Game.report_text()
 	body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	body.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	body.add_theme_font_size_override("font_size", 19)
+	body.add_theme_font_size_override("font_size", Game.fs(19))
 	scroll.add_child(body)
 	_msg = Label.new()
 	_msg.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART

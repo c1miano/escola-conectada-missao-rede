@@ -4,7 +4,7 @@ extends Control
 ## O anel de luz pulsa quando ele fala e pisca colorido quando o jogador acerta.
 ## Clicar no Bit repete a última instrução.
 
-const SCALE := 4
+const SCALE := 3
 
 var mood := "normal":
 	set(v):

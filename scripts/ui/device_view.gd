@@ -58,13 +58,13 @@ func _init(p_kind: String = "pc", p_title: String = "", p_info: String = "", p_i
 	name_label = Label.new()
 	name_label.text = p_title
 	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	name_label.add_theme_font_size_override("font_size", 19)
+	name_label.add_theme_font_size_override("font_size", Game.fs(19))
 	name_label.add_theme_stylebox_override("normal", _label_box(Color(1, 1, 1, 0.92)))
 	add_child(name_label)
 	info_label = Label.new()
 	info_label.text = p_info
 	info_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	info_label.add_theme_font_size_override("font_size", 18)
+	info_label.add_theme_font_size_override("font_size", Game.fs(18))
 	info_label.add_theme_color_override("font_color", Palette.TEXT)
 	info_label.add_theme_stylebox_override("normal", _label_box(Color("#fff3c4")))
 	info_label.visible = p_info != ""
@@ -76,9 +76,10 @@ func _label_box(bg: Color) -> StyleBoxFlat:
 	var sb := StyleBoxFlat.new()
 	sb.bg_color = bg
 	sb.border_color = Palette.FRAME_DARK
-	sb.set_border_width_all(2)
-	sb.content_margin_left = 6
-	sb.content_margin_right = 6
+	sb.set_border_width_all(1)
+	sb.set_corner_radius_all(3)
+	sb.content_margin_left = 4
+	sb.content_margin_right = 4
 	return sb
 
 
@@ -189,12 +190,13 @@ func _draw_art() -> void:
 
 
 func _tag(center: Vector2, s: String) -> void:
-	var font := ThemeDB.fallback_font
-	var w := font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, 17).x
-	var box := Rect2(center - Vector2(w / 2.0 + 5, 12), Vector2(w + 10, 24)).abs()
+	var font := Game.ui_font
+	var fsz := Game.fs(18)
+	var w := font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, fsz).x
+	var box := Rect2(center - Vector2(w / 2.0 + 4, fsz / 2.0 + 3), Vector2(w + 8, fsz + 6)).abs()
 	art.draw_rect(box, Color.WHITE)
-	art.draw_rect(box, Palette.FRAME_DARK, false, 2)
-	art.draw_string(font, box.position + Vector2(5, 18), s, HORIZONTAL_ALIGNMENT_LEFT, -1, 17, Palette.TEXT)
+	art.draw_rect(box, Palette.FRAME_DARK, false, 1)
+	art.draw_string(font, box.position + Vector2(4, fsz * 0.86 + 2), s, HORIZONTAL_ALIGNMENT_LEFT, -1, fsz, Palette.TEXT)
 
 
 ## Indicador de estado: quadrado verde com check (ligado) ou cinza com traço (desligado).

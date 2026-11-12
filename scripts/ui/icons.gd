@@ -12,7 +12,7 @@ static func star_points(c: Vector2, r: float, inner := 0.45) -> PackedVector2Arr
 
 
 static func _text(ci: CanvasItem, c: Vector2, r: float, s: String, col: Color) -> void:
-	var font := ThemeDB.fallback_font
+	var font := Game.ui_font
 	var size := int(r * 1.5)
 	var w := font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x
 	ci.draw_string(font, c + Vector2(-w / 2.0, size * 0.36), s, HORIZONTAL_ALIGNMENT_LEFT, -1, size, col)

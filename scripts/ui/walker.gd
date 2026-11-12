@@ -6,7 +6,7 @@ extends Control
 signal arrived
 
 const SPEED := 360.0
-const SCALE := 4
+const SCALE := 3
 
 var facing := "baixo"
 var moving := false

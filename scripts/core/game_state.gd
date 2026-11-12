@@ -43,6 +43,23 @@ var settings := {
 var report: Dictionary = {}
 
 var _theme_builder := preload("res://scripts/ui/theme_builder.gd")
+## Fonte em pixel Jersey 10 (licença OFL): números bem distintos, importante para ler IPs.
+var ui_font: Font = preload("res://assets/fonts/Jersey10-Regular.woff")
+var ui_font_bold: Font = ui_font
+
+
+## Tamanho de texto do jogo: visual compacto por padrão; "Texto grande" aumenta tudo.
+func fs(size: int) -> int:
+	return int(round(size * text_scale()))
+
+
+## A Jersey 10 é condensada: precisa de tamanho nominal maior que fontes comuns.
+func text_scale() -> float:
+	return 1.25 if settings.texto_grande else 0.98
+
+
+func ui_scale() -> float:
+	return 0.92 if settings.texto_grande else 0.7
 
 
 func _ready() -> void:

@@ -24,13 +24,9 @@ func centered_column(width: float = 640.0) -> VBoxContainer:
 	var center := CenterContainer.new()
 	center.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(center)
-	var panel := PanelContainer.new()
-	panel.custom_minimum_size = Vector2(width, 0)
-	center.add_child(panel)
-	var box := VBoxContainer.new()
-	box.add_theme_constant_override("separation", 14)
-	panel.add_child(box)
-	return box
+	var win := UiWindow.create("", width * 0.75)
+	center.add_child(win.root)
+	return win.body
 
 
 func heading(parent: Control, text: String, size: int = 34, col: Color = Palette.PRIMARY_DARK) -> Label:

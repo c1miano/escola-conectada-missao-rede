@@ -83,7 +83,7 @@ func build() -> void:
 	bottom.add_child(bp)
 	bubble = Label.new()
 	bubble.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	bubble.add_theme_font_size_override("font_size", 17)
+	bubble.add_theme_font_size_override("font_size", Game.fs(17))
 	bp.add_child(bubble)
 	var holder := Control.new()
 	holder.custom_minimum_size = Vector2(96, 100)
@@ -102,7 +102,7 @@ func _top_bar(root: VBoxContainer) -> void:
 	top.add_child(row)
 	var t := Label.new()
 	t.text = "Mapa da Escola"
-	t.add_theme_font_size_override("font_size", 24)
+	t.add_theme_font_size_override("font_size", Game.fs(24))
 	t.add_theme_color_override("font_color", Palette.PRIMARY_DARK)
 	row.add_child(t)
 	var stars := Control.new()
@@ -319,13 +319,14 @@ func _draw_room(r: Dictionary) -> void:
 	if r.id != 0 and not Game.is_unlocked(r.id):
 		map.draw_rect(rp, Color(0.08, 0.1, 0.2, 0.45))
 	if r.id == 0:
-		var font := ThemeDB.fallback_font
+		var font := Game.ui_font
 		var label := "Pátio da Feira"
-		var w := font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, 20).x
-		var box := Rect2(Vector2(rp.get_center().x - w / 2.0 - 10, rp.position.y + 2 * T + 8), Vector2(w + 20, 32))
+		var fsz := Game.fs(20)
+		var w := font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, fsz).x
+		var box := Rect2(Vector2(rp.get_center().x - w / 2.0 - 8, rp.position.y + 2 * T + 8), Vector2(w + 16, fsz + 10))
 		map.draw_rect(box, Palette.CREAM)
-		map.draw_rect(box, Palette.FRAME_DARK, false, 3)
-		map.draw_string(font, box.position + Vector2(10, 23), label, HORIZONTAL_ALIGNMENT_LEFT, -1, 20, Palette.TEXT)
+		map.draw_rect(box, Palette.FRAME_DARK, false, 2)
+		map.draw_string(font, box.position + Vector2(8, fsz * 0.86 + 4), label, HORIZONTAL_ALIGNMENT_LEFT, -1, fsz, Palette.TEXT)
 
 
 func _draw_player(o: Vector2) -> void:

@@ -20,7 +20,7 @@ func _init(n_ports: int = 4, p_title: String = "Switch") -> void:
 		var b := Button.new()
 		b.text = "Porta %d" % (i + 1)
 		b.custom_minimum_size = Vector2(84, 56)
-		b.add_theme_font_size_override("font_size", 17)
+		b.add_theme_font_size_override("font_size", Game.fs(17))
 		b.focus_mode = Control.FOCUS_ALL
 		b.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 		var idx := i

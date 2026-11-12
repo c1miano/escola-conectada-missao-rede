@@ -42,7 +42,8 @@ No fim, a escola fica iluminada e Bit entrega o certificado **"Técnico de Redes
 - **Ouvir de novo:** narração das instruções com a voz do sistema (pode ser desligada).
 - Sem limite de tempo, sem pontos negativos, tentativas ilimitadas.
 - Acerto/erro sempre com **ícone + texto + som**, nunca só com cor.
-- Opções de **texto grande** e **pular animações repetidas** (o personagem também se move na hora).
+- Interface compacta em pixel art por padrão; a opção **Texto grande** aumenta textos, botões e janelas.
+- Opção **pular animações repetidas** (o personagem também se move na hora).
 
 ## Relatório do professor
 
@@ -74,6 +75,11 @@ python3 tools/pixelart/gerar_sprites.py
 
 Os PNGs podem ser retocados no Aseprite. `tools/pixelart/previa.png` mostra todos os sprites e
 `tools/pixelart/tecnico_andando.gif` mostra a caminhada nas 4 direções.
+
+### Fonte
+
+A interface usa a fonte em pixel **Jersey 10** (licença SIL OFL 1.1, em `assets/fonts/OFL-Jersey10.txt`),
+escolhida porque os números ficam bem distintos (5, 3, 8, 9, 0), o que importa para ler endereços IP.
 
 ### Teste automático
 

@@ -8,7 +8,7 @@ var state := "locked"  # locked, open, done
 
 func _init(m: Dictionary) -> void:
 	mission = m
-	custom_minimum_size = Vector2(336, 80)
+	custom_minimum_size = Vector2(250, 52) * (Game.ui_scale() / 0.7)
 	focus_mode = Control.FOCUS_ALL
 	mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	tooltip_text = "Missão %d — %s" % [m.id, m.title]
@@ -24,9 +24,9 @@ func _init(m: Dictionary) -> void:
 		var s := StyleBoxFlat.new()
 		s.bg_color = bg if st != "hover" else bg.lightened(0.25)
 		s.border_color = Palette.FOCUS if st == "focus" else Palette.FRAME_DARK
-		s.set_border_width_all(4 if st != "focus" else 6)
-		s.border_width_bottom = 8
-		s.set_corner_radius_all(3)
+		s.set_border_width_all(2 if st != "focus" else 4)
+		s.border_width_bottom = 4
+		s.set_corner_radius_all(5)
 		if st == "focus":
 			s.draw_center = false
 		add_theme_stylebox_override(st, s)
@@ -41,17 +41,22 @@ func status_text() -> String:
 
 
 func _draw() -> void:
-	var font := ThemeDB.fallback_font
+	var font := Game.ui_font
 	var s := size
 	var dark := Palette.TEXT if state != "locked" else Color("#3d4452")
-	var ic := Vector2(36, s.y / 2.0 - 4)
+	var k := s.y / 52.0
+	var ic := Vector2(22 * k, s.y / 2.0 - 1)
+	var r := 14.0 * k
 	match state:
 		"locked":
-			Icons.draw(self, "lock", ic, 22, Color("#3d4452"))
+			Icons.draw(self, "lock", ic, r * 0.85, Color("#3d4452"))
 		"open":
-			Icons.draw(self, "star_empty", ic, 26, Palette.STAR_DARK)
+			Icons.draw(self, "star_empty", ic, r, Palette.STAR_DARK)
 		"done":
-			draw_colored_polygon(Icons.star_points(ic, 26), Palette.STAR)
-			Icons.draw(self, "star_empty", ic, 26, Palette.STAR_DARK)
-	draw_string(font, Vector2(72, 30), "Missão %d · %s" % [mission.id, status_text()], HORIZONTAL_ALIGNMENT_LEFT, s.x - 80, 18, Palette.TEXT_SOFT if state != "locked" else dark)
-	draw_string(font, Vector2(72, 58), mission.place, HORIZONTAL_ALIGNMENT_LEFT, s.x - 80, 19, dark)
+			draw_colored_polygon(Icons.star_points(ic, r), Palette.STAR)
+			Icons.draw(self, "star_empty", ic, r, Palette.STAR_DARK)
+	var f1 := Game.fs(18)
+	var f2 := Game.fs(21)
+	var bold := Game.ui_font_bold
+	draw_string(font, Vector2(44 * k, s.y / 2.0 - 4 * k), "Missão %d · %s" % [mission.id, status_text()], HORIZONTAL_ALIGNMENT_LEFT, s.x - 50 * k, f1, Palette.TEXT_SOFT if state != "locked" else dark)
+	draw_string(bold, Vector2(44 * k, s.y / 2.0 + 14 * k), mission.place, HORIZONTAL_ALIGNMENT_LEFT, s.x - 50 * k, f2, dark)

@@ -28,7 +28,7 @@ func build() -> void:
 
 	var buttons := VBoxContainer.new()
 	buttons.add_theme_constant_override("separation", 14)
-	buttons.custom_minimum_size = Vector2(420, 0)
+	buttons.custom_minimum_size = Vector2(300, 0) * (Game.ui_scale() / 0.7)
 	buttons.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	col.add_child(buttons)
 	var play := button(buttons, "Jogar", "play", _on_play, "success", 80)
@@ -57,7 +57,7 @@ func _ask_restart() -> void:
 	c.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_confirm.add_child(c)
 	var p := PanelContainer.new()
-	p.custom_minimum_size = Vector2(620, 0)
+	p.custom_minimum_size = Vector2(460, 0)
 	c.add_child(p)
 	var box := VBoxContainer.new()
 	p.add_child(box)
@@ -73,7 +73,7 @@ func _ask_restart() -> void:
 
 
 func _draw_logo(c: Control) -> void:
-	var font := ThemeDB.fallback_font
+	var font := Game.ui_font
 	var s := c.size
 	# ícone de rede em estrela
 	var hub := Vector2(90, s.y / 2.0)

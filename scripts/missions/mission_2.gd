@@ -38,7 +38,7 @@ func setup() -> void:
 	place(explainer, Vector2(0.79, 0.12))
 	sheet_panel = PanelContainer.new()
 	sheet = Label.new()
-	sheet.add_theme_font_size_override("font_size", 20)
+	sheet.add_theme_font_size_override("font_size", Game.fs(20))
 	sheet_panel.add_child(sheet)
 	place(sheet_panel, Vector2(0.80, 0.37))
 	_connect_all.call_deferred()

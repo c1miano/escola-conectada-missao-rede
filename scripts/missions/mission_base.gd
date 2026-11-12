@@ -112,7 +112,7 @@ func _build_layout() -> void:
 	top_row.add_child(titles)
 	title_label = Label.new()
 	title_label.text = "Missão %d — %s" % [mission_id, info.get("title", "")]
-	title_label.add_theme_font_size_override("font_size", 28)
+	title_label.add_theme_font_size_override("font_size", Game.fs(28))
 	title_label.add_theme_color_override("font_color", Palette.PRIMARY_DARK)
 	titles.add_child(title_label)
 	objective_label = Label.new()
@@ -146,31 +146,42 @@ func _build_layout() -> void:
 	_bubble_panel.z_index = 8
 	_bubble_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var bs := StyleBoxFlat.new()
-	bs.bg_color = Color("#fffbe6")
+	bs.bg_color = Color("#ffffff")
 	bs.border_color = Palette.FRAME_DARK
-	bs.set_border_width_all(4)
-	bs.border_width_bottom = 7
-	bs.set_corner_radius_all(3)
-	bs.content_margin_left = 14
-	bs.content_margin_right = 14
-	bs.content_margin_top = 8
-	bs.content_margin_bottom = 8
+	bs.set_border_width_all(2)
+	bs.set_corner_radius_all(6)
+	bs.content_margin_left = 10
+	bs.content_margin_right = 10
+	bs.content_margin_top = 5
+	bs.content_margin_bottom = 6
+	bs.shadow_color = Color(0.05, 0.05, 0.15, 0.3)
+	bs.shadow_size = 1
+	bs.shadow_offset = Vector2(2, 2)
 	_bubble_panel.add_theme_stylebox_override("panel", bs)
 	# pontinha do balão apontando para baixo, para o Bit
 	_bubble_panel.draw.connect(func():
 		var r := _bubble_panel.size
-		var x := r.x - 64.0
-		_bubble_panel.draw_colored_polygon(PackedVector2Array([Vector2(x - 14, r.y - 4), Vector2(x, r.y + 16), Vector2(x + 14, r.y - 4)]), Palette.FRAME_DARK)
-		_bubble_panel.draw_colored_polygon(PackedVector2Array([Vector2(x - 8, r.y - 8), Vector2(x, r.y + 6), Vector2(x + 8, r.y - 8)]), Color("#fffbe6")))
+		var x := r.x - 34.0
+		_bubble_panel.draw_colored_polygon(PackedVector2Array([Vector2(x - 8, r.y - 2), Vector2(x, r.y + 9), Vector2(x + 8, r.y - 2)]), Palette.FRAME_DARK)
+		_bubble_panel.draw_colored_polygon(PackedVector2Array([Vector2(x - 5, r.y - 3), Vector2(x, r.y + 5), Vector2(x + 5, r.y - 3)]), Color.WHITE))
 	stage.add_child(_bubble_panel)
 	bubble = Label.new()
 	bubble.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	bubble.custom_minimum_size = Vector2(360, 0)
-	bubble.add_theme_font_size_override("font_size", 20)
-	_bubble_panel.add_child(bubble)
+	bubble.custom_minimum_size = Vector2(300, 0)
+	bubble.add_theme_font_size_override("font_size", Game.fs(21))
+	var bubble_col := VBoxContainer.new()
+	bubble_col.add_theme_constant_override("separation", 0)
+	var who := Label.new()
+	who.text = "Bit"
+	who.add_theme_font_override("font", Game.ui_font_bold)
+	who.add_theme_font_size_override("font_size", Game.fs(19))
+	who.add_theme_color_override("font_color", Palette.PRIMARY)
+	bubble_col.add_child(who)
+	bubble_col.add_child(bubble)
+	_bubble_panel.add_child(bubble_col)
 
 	help_button = BigButton.new("Preciso\nde ajuda", "help", "star", 84)
-	help_button.add_theme_font_size_override("font_size", 20)
+	help_button.add_theme_font_size_override("font_size", Game.fs(20))
 	help_button.z_index = 8
 	help_button.pressed.connect(_on_help)
 	stage.add_child(help_button)
@@ -204,7 +215,7 @@ func _build_layout() -> void:
 	pointer = PointerView.new()
 	add_child(pointer)
 	use_button = BigButton.new("Usar", "play", "star", 58)
-	use_button.add_theme_font_size_override("font_size", 20)
+	use_button.add_theme_font_size_override("font_size", Game.fs(20))
 	use_button.visible = false
 	use_button.z_index = 30
 	use_button.pressed.connect(_use_near)
@@ -221,14 +232,14 @@ func _build_feedback() -> void:
 	var row := HBoxContainer.new()
 	_feedback.add_child(row)
 	_feedback_icon = Control.new()
-	_feedback_icon.custom_minimum_size = Vector2(64, 64)
+	_feedback_icon.custom_minimum_size = Vector2(36, 36)
 	_feedback_icon.draw.connect(func():
 		var c := _feedback_icon.size / 2.0
-		_feedback_icon.draw_circle(c, 30, Palette.SUCCESS if _feedback_ok else Palette.ATTENTION)
-		Icons.draw(_feedback_icon, "check" if _feedback_ok else "retry", c, 22, Color.WHITE))
+		_feedback_icon.draw_circle(c, 17, Palette.SUCCESS if _feedback_ok else Palette.ATTENTION)
+		Icons.draw(_feedback_icon, "check" if _feedback_ok else "retry", c, 12, Color.WHITE))
 	row.add_child(_feedback_icon)
 	_feedback_label = Label.new()
-	_feedback_label.add_theme_font_size_override("font_size", 30)
+	_feedback_label.add_theme_font_size_override("font_size", Game.fs(30))
 	_feedback_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	row.add_child(_feedback_label)
 
@@ -237,14 +248,15 @@ func _draw_room() -> void:
 	var s := stage.size
 	Room.draw(stage, Rect2(Vector2.ZERO, s), floor_tile, wall_items, floor_items)
 	# placa com o nome do local, na parede
-	var font := ThemeDB.fallback_font
+	var font := Game.ui_font
 	var place: String = info.get("place", "")
-	var w := font.get_string_size(place, HORIZONTAL_ALIGNMENT_LEFT, -1, 20).x
-	var sign := Rect2(Vector2(14, 22), Vector2(w + 60, 42))
+	var fsz := Game.fs(20)
+	var w := font.get_string_size(place, HORIZONTAL_ALIGNMENT_LEFT, -1, fsz).x
+	var sign := Rect2(Vector2(14, 28), Vector2(w + 40, fsz + 14))
 	stage.draw_rect(sign, Palette.CREAM)
-	stage.draw_rect(sign, Palette.FRAME_DARK, false, 4)
-	Icons.draw(stage, place_icon, sign.position + Vector2(24, 21), 12, Palette.PRIMARY_DARK)
-	stage.draw_string(font, sign.position + Vector2(42, 28), place, HORIZONTAL_ALIGNMENT_LEFT, -1, 20, Palette.TEXT)
+	stage.draw_rect(sign, Palette.FRAME_DARK, false, 2)
+	Icons.draw(stage, place_icon, sign.position + Vector2(15, sign.size.y / 2.0), 8, Palette.PRIMARY_DARK)
+	stage.draw_string(font, sign.position + Vector2(28, sign.size.y / 2.0 + fsz * 0.36), place, HORIZONTAL_ALIGNMENT_LEFT, -1, fsz, Palette.TEXT)
 
 
 ## Converte posição relativa (0..1) para a área do piso.
@@ -261,7 +273,7 @@ func _process(_d: float) -> void:
 			n.position = (floor_point(_placed[n]) - n.size / 2.0).round()
 	if _feedback.visible:
 		_feedback.position.x = (size.x - _feedback.size.x) / 2.0
-		_feedback.position.y = 120
+		_feedback.position.y = 90
 
 
 # ================================================================== Bit, balão, ajuda e opções dentro da sala
@@ -275,8 +287,8 @@ func _layout_overlays() -> void:
 	help_button.position = Vector2(bit.position.x - help_button.size.x - 10, sz.y - help_button.size.y - 14).round()
 	# balão acima do Bit (some quando não há texto)
 	_bubble_panel.visible = bubble.text.strip_edges() != ""
-	var bw := minf(460.0, sz.x * 0.42)
-	bubble.custom_minimum_size.x = bw - 28
+	var bw := minf(400.0 * Game.ui_scale() / 0.7, sz.x * 0.4)
+	bubble.custom_minimum_size.x = bw - 20
 	_bubble_panel.reset_size()
 	_bubble_panel.position = Vector2(sz.x - _bubble_panel.size.x - 14, bit.position.y - _bubble_panel.size.y - 10).round()
 	# painel de opções: embaixo, no meio da área livre (só quando há opções)
@@ -642,16 +654,13 @@ func _run_quizzes(quizzes: Array, i: int, message: String) -> void:
 
 ## Pergunta em tela própria (uma tarefa por tela). Erros não tiram pontos.
 func ask_question(quiz: Dictionary, on_done: Callable, header: String = "Pergunta") -> void:
-	var ov := _make_overlay()
+	var ov := _make_overlay(header)
 	var box := ov.get_meta("box") as VBoxContainer
-	var h := Label.new()
-	h.text = header
-	h.add_theme_color_override("font_color", Palette.PRIMARY_DARK)
-	box.add_child(h)
+	box.add_child(Control.new())   # (mantém a ordem: pergunta, pista, opções)
 	var q := Label.new()
 	q.text = quiz.q
 	q.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	q.add_theme_font_size_override("font_size", 28)
+	q.add_theme_font_size_override("font_size", Game.fs(28))
 	box.add_child(q)
 	var tip := Label.new()
 	tip.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -682,7 +691,7 @@ func ask_question(quiz: Dictionary, on_done: Callable, header: String = "Pergunt
 
 ## Tela de história no início da missão (uma tarefa por tela). Depois chama on_start.
 func story(text: String, on_start: Callable) -> void:
-	var ov := _make_overlay()
+	var ov := _make_overlay("Missão %d — %s" % [mission_id, info.get("title", "")])
 	var box := ov.get_meta("box") as VBoxContainer
 	var row := HBoxContainer.new()
 	box.add_child(row)
@@ -691,19 +700,21 @@ func story(text: String, on_start: Callable) -> void:
 	row.add_child(holder)
 	var b := BitSpeaker.new()
 	b.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	holder.custom_minimum_size = b.custom_minimum_size
 	holder.add_child(b)
 	var col := VBoxContainer.new()
 	col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	row.add_child(col)
 	var place := Label.new()
-	place.text = "%s — %s" % [info.get("place", ""), info.get("title", "")]
+	place.text = "Bit diz:"
+	place.add_theme_font_override("font", Game.ui_font_bold)
 	place.add_theme_color_override("font_color", Palette.PRIMARY_DARK)
 	place.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	col.add_child(place)
 	var l := Label.new()
 	l.text = text
 	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	l.add_theme_font_size_override("font_size", 28)
+	l.add_theme_font_size_override("font_size", Game.fs(28))
 	col.add_child(l)
 	var go := BigButton.new("Começar", "play", "success", 80)
 	go.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
@@ -716,22 +727,18 @@ func story(text: String, on_start: Callable) -> void:
 	Voice.say(text)
 
 
-func _make_overlay() -> Control:
+func _make_overlay(title: String = "", width: float = 560.0) -> Control:
 	var ov := ColorRect.new()
-	ov.color = Color(0.05, 0.08, 0.15, 0.7)
+	ov.color = Color(0.05, 0.08, 0.15, 0.55)
 	ov.set_anchors_preset(Control.PRESET_FULL_RECT)
 	ov.z_index = 60
 	add_child(ov)
 	var center := CenterContainer.new()
 	center.set_anchors_preset(Control.PRESET_FULL_RECT)
 	ov.add_child(center)
-	var panel := PanelContainer.new()
-	panel.custom_minimum_size = Vector2(760, 0)
-	center.add_child(panel)
-	var box := VBoxContainer.new()
-	box.add_theme_constant_override("separation", 14)
-	panel.add_child(box)
-	ov.set_meta("box", box)
+	var win := UiWindow.create(title, width)
+	center.add_child(win.root)
+	ov.set_meta("box", win.body)
 	return ov
 
 
@@ -739,30 +746,30 @@ func _finish(message: String) -> void:
 	Game.complete_mission(mission_id)
 	Sfx.play("win")
 	bit.celebrate()
-	var ov := _make_overlay()
+	var ov := _make_overlay("Missão concluída", 480.0)
 	var box := ov.get_meta("box") as VBoxContainer
 	box.alignment = BoxContainer.ALIGNMENT_CENTER
 	var star := Control.new()
-	star.custom_minimum_size = Vector2(200, 200)
-	star.pivot_offset = Vector2(100, 100)
+	star.custom_minimum_size = Vector2(130, 120)
+	star.pivot_offset = Vector2(65, 60)
 	star.draw.connect(func():
-		star.draw_circle(Vector2(100, 100), 92, Color(1, 0.9, 0.4, 0.35))
-		star.draw_colored_polygon(Icons.star_points(Vector2(100, 100), 84), Palette.STAR)
-		var p := Icons.star_points(Vector2(100, 100), 84)
+		star.draw_circle(Vector2(65, 60), 56, Color(1, 0.9, 0.4, 0.35))
+		star.draw_colored_polygon(Icons.star_points(Vector2(65, 60), 50), Palette.STAR)
+		var p := Icons.star_points(Vector2(65, 60), 50)
 		p.append(p[0])
 		star.draw_polyline(p, Palette.STAR_DARK, 5, true))
 	box.add_child(star)
 	var title := Label.new()
 	title.text = "Missão %d concluída!" % mission_id
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.add_theme_font_size_override("font_size", 34)
+	title.add_theme_font_size_override("font_size", Game.fs(34))
 	title.add_theme_color_override("font_color", Palette.SUCCESS)
 	box.add_child(title)
 	var msg := Label.new()
 	msg.text = message
 	msg.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	msg.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	msg.add_theme_font_size_override("font_size", 28)
+	msg.add_theme_font_size_override("font_size", Game.fs(28))
 	box.add_child(msg)
 	var row := HBoxContainer.new()
 	row.alignment = BoxContainer.ALIGNMENT_CENTER

@@ -37,7 +37,7 @@ func setup() -> void:
 		note = PanelContainer.new()
 		var l := Label.new()
 		l.text = "Bilhete na parede:\nWi-Fi: %s\nSenha: %s" % [SSID, PASSWORD]
-		l.add_theme_font_size_override("font_size", 18)
+		l.add_theme_font_size_override("font_size", Game.fs(18))
 		note.add_child(l)
 		place(note, Vector2(0.88, 0.14))
 	_wire.call_deferred()

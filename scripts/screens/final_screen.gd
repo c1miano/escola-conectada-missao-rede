@@ -45,7 +45,7 @@ func build() -> void:
 
 func _draw_certificate(c: Control) -> void:
 	var s := c.size
-	var font := ThemeDB.fallback_font
+	var font := Game.ui_font
 	c.draw_rect(Rect2(Vector2.ZERO, s), Color("#fffaf0"))
 	c.draw_rect(Rect2(Vector2(10, 10), s - Vector2(20, 20)), Palette.STAR_DARK, false, 6)
 	c.draw_rect(Rect2(Vector2(22, 22), s - Vector2(44, 44)), Palette.PRIMARY, false, 2)

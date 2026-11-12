@@ -15,7 +15,7 @@ func build() -> void:
 	center.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	scroll.add_child(center)
 	var panel := PanelContainer.new()
-	panel.custom_minimum_size = Vector2(860, 0)
+	panel.custom_minimum_size = Vector2(640, 0) * (Game.ui_scale() / 0.7)
 	center.add_child(panel)
 	_rows = VBoxContainer.new()
 	_rows.add_theme_constant_override("separation", 12)
@@ -47,7 +47,7 @@ func _fill() -> void:
 	var le := LineEdit.new()
 	le.text = Game.student_name
 	le.placeholder_text = "Pode deixar em branco"
-	le.custom_minimum_size = Vector2(320, 60)
+	le.custom_minimum_size = Vector2(240, 0)
 	le.max_length = 40
 	le.text_changed.connect(func(t):
 		Game.student_name = t
@@ -77,7 +77,7 @@ func _toggle(label: String, key: String, icon: String) -> void:
 	var b := button(row, "Ligado" if on else "Desligado", "check" if on else "minus", func():
 		Game.set_setting(key, not Game.settings[key])
 		_refresh(), "success" if on else "secondary", 64)
-	b.custom_minimum_size.x = 220
+	b.custom_minimum_size.x = 190
 
 
 func _set_mode(m: String) -> void:

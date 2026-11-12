@@ -59,7 +59,7 @@ func _build_console() -> void:
 	console_panel.add_theme_stylebox_override("panel", st)
 	console_label = Label.new()
 	console_label.add_theme_color_override("font_color", Color("#c8f7c5"))
-	console_label.add_theme_font_size_override("font_size", 20)
+	console_label.add_theme_font_size_override("font_size", Game.fs(20))
 	console_label.text = "Terminal da biblioteca\n> _"
 	console_panel.add_child(console_label)
 	place(console_panel, Vector2(0.5, 0.18))
@@ -79,7 +79,7 @@ func _build_browser() -> void:
 	browser_page.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	browser_page.custom_minimum_size = Vector2(450, 0)
 	browser_page.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	browser_page.add_theme_font_size_override("font_size", 30)
+	browser_page.add_theme_font_size_override("font_size", Game.fs(30))
 	browser_page.add_theme_color_override("font_color", Palette.PRIMARY_DARK)
 	browser_page.text = "Feira de Tecnologia\nEscola Conectada\n\nBem-vindos! Projetos, robôs e muito mais."
 	v.add_child(browser_page)
@@ -255,7 +255,7 @@ func _show_layers() -> void:
 	place(right, Vector2(0.67, 0.45))
 	var cap := Label.new()
 	cap.text = "Modelo TCP/IP: 4 camadas. (O modelo OSI divide o mesmo caminho em 7 camadas.)"
-	cap.add_theme_font_size_override("font_size", 19)
+	cap.add_theme_font_size_override("font_size", Game.fs(19))
 	var cap_panel := PanelContainer.new()
 	cap_panel.add_child(cap)
 	place(cap_panel, Vector2(0.5, 0.94))
@@ -300,7 +300,7 @@ func _stack(title: String, layers: Array) -> PanelContainer:
 		row.custom_minimum_size = Vector2(250, 0)
 		var l := Label.new()
 		l.text = "%d. %s" % [4 - i, layers[i]]
-		l.add_theme_font_size_override("font_size", 18)
+		l.add_theme_font_size_override("font_size", Game.fs(18))
 		row.add_child(l)
 		v.add_child(row)
 		rows.append(row)

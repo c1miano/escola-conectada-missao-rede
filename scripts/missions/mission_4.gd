@@ -33,7 +33,7 @@ func setup() -> void:
 	place(pc_b, Vector2(0.56, 0.26))
 	clue_panel = PanelContainer.new()
 	clue_label = Label.new()
-	clue_label.add_theme_font_size_override("font_size", 20)
+	clue_label.add_theme_font_size_override("font_size", Game.fs(20))
 	clue_label.custom_minimum_size = Vector2(330, 0)
 	clue_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	clue_panel.add_child(clue_label)

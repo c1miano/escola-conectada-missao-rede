@@ -23,15 +23,15 @@ func build() -> void:
 
 func _card(parent: Control, title: String, desc: String, mode: String, icon: String) -> void:
 	var p := PanelContainer.new()
-	p.custom_minimum_size = Vector2(400, 0)
+	p.custom_minimum_size = Vector2(300, 0) * (Game.ui_scale() / 0.7)
 	parent.add_child(p)
 	var box := VBoxContainer.new()
 	p.add_child(box)
 	var ic := Control.new()
-	ic.custom_minimum_size = Vector2(0, 90)
+	ic.custom_minimum_size = Vector2(0, 60)
 	ic.draw.connect(func():
-		ic.draw_circle(ic.size / 2.0, 40, Palette.PRIMARY)
-		Icons.draw(ic, icon, ic.size / 2.0, 26, Color.WHITE))
+		ic.draw_circle(ic.size / 2.0, 26, Palette.PRIMARY)
+		Icons.draw(ic, icon, ic.size / 2.0, 16, Color.WHITE))
 	box.add_child(ic)
 	heading(box, title, 32)
 	var d := text(box, desc)
