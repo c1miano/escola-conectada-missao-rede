@@ -8,7 +8,7 @@ export default class GameScene extends Phaser.Scene {
 
     // Plataformas
     this.platforms = this.physics.add.staticGroup();
-    for (let x = 32; x < width; x += 64) {
+    for (let x = 32; x < width + 32; x += 64) {
       this.platforms.create(x, height - 8, 'ground');
     }
     this.platforms.create(200, 320, 'ground');
@@ -27,6 +27,7 @@ export default class GameScene extends Phaser.Scene {
       this.coins.create(x, y, 'coin');
     });
     this.score = 0;
+    this.add.text(this.scale.width - 16, 16, 'Escola Conectada: Missão Rede', { fontFamily: 'monospace', fontSize: '16px', color: '#fff' }).setOrigin(1, 0);
     this.scoreText = this.add.text(16, 16, 'Moedas: 0', { fontFamily: 'monospace', fontSize: '20px', color: '#fff' });
     this.physics.add.overlap(this.player, this.coins, (_p, coin) => {
       coin.destroy();
