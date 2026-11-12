@@ -159,8 +159,6 @@ func _draw_art() -> void:
 	var sz := Sprites.size_of(sprite_name())
 	var origin := (c - sz / 2.0).round()
 	var sprite_rect := Rect2(origin, sz)
-	# sombra no chão
-	art.draw_rect(Rect2(origin + Vector2(6, sz.y - 6), Vector2(sz.x - 12, 6)), Color(0.1, 0.1, 0.25, 0.25))
 	if highlighted:
 		var pulse := 0.5 + 0.5 * sin(_t * 5.0)
 		var hr := sprite_rect.grow(6 + round(pulse * 4))

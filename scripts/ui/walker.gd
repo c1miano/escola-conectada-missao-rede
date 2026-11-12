@@ -65,6 +65,8 @@ func _process(delta: float) -> void:
 			moving = true
 	if moving:
 		_t += delta
+	else:
+		_idle_t += delta
 	queue_redraw()
 
 
@@ -87,7 +89,16 @@ func _face(dir: Vector2) -> void:
 		facing = "baixo" if dir.y > 0 else "cima"
 
 
+var who := "tecnico"
+var _idle_t := 0.0
+
+
+## Nome do quadro atual: caminhada de 4 quadros a 10 por segundo, ou respiração parado (2 quadros).
+static func frame_name(p_who: String, p_facing: String, p_moving: bool, walk_t: float, idle_t: float) -> String:
+	if p_moving:
+		return "%s_%s_%d" % [p_who, p_facing, int(walk_t * 10.0) % 4]
+	return "%s_%s_parado_%d" % [p_who, p_facing, int(idle_t * 1.6) % 2]
+
+
 func _draw() -> void:
-	var frame := int(_t * 8.0) % 2 if moving else 0
-	draw_rect(Rect2(Vector2(size.x * 0.2, size.y - 8), Vector2(size.x * 0.6, 8)), Color(0.1, 0.1, 0.25, 0.3))
-	Sprites.draw(self, "tecnico_%s_%d" % [facing, frame], Vector2.ZERO, SCALE)
+	Sprites.draw(self, frame_name(who, facing, moving, _t, _idle_t), Vector2.ZERO, SCALE)

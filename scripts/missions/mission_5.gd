@@ -246,11 +246,21 @@ func _event_presence() -> void:
 	person = Control.new()
 	person.custom_minimum_size = Vector2(64, 64)
 	person.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	person.draw.connect(func(): Sprites.draw(person, "visitante", Vector2.ZERO, 4))
+	var walk := {"t": 0.0, "moving": true}
+	person.set_meta("walk", walk)
+	person.draw.connect(func():
+		var w: Dictionary = person.get_meta("walk")
+		Sprites.draw(person, Walker.frame_name("visitante", "esquerda" if w.moving else "baixo", w.moving, w.t, w.t), Vector2.ZERO, 4))
 	place(person, Vector2(0.98, 0.62))
 	var t := animate("m5_presenca")
-	t.tween_method(func(x: float): move_to(person, Vector2(x, 0.62)), 0.98, 0.64, 1.4)
+	t.tween_method(func(x: float):
+		move_to(person, Vector2(x, 0.62))
+		var w: Dictionary = person.get_meta("walk")
+		w.t += 1.0 / 60.0
+		person.queue_redraw(), 0.98, 0.64, 1.4)
 	t.tween_callback(func():
+		person.get_meta("walk").moving = false
+		person.queue_redraw()
 		iot.value_text = "Presença!"
 		iot.queue_redraw())
 	send_packet(t, "Presença detectada", [iot, ap, sw, panel], Palette.ATTENTION, 0.5)

@@ -57,14 +57,23 @@ O relatório **não contém diagnóstico** nem classificação do estudante. Tud
 
 ### Pixel art
 
-Os sprites ficam em `assets/sprites/` e são gerados por um script (paleta única, contorno colorido,
-luz de cima/esquerda, sem antialiasing — técnicas do guia *pixel-art-professional*):
+Os sprites ficam em `assets/sprites/` e são gerados por um script que segue as técnicas dos guias
+*pixel-art-professional* e *td2d (threedee-twodee)*, feitas direto em 2D:
+
+- rampas de cor por material (sombra fria, luz quente) e sombreado em faixas com luz de cima/esquerda;
+- linhas internas no tom escuro de cada material, contorno externo automático e limpeza de pixels soltos;
+- sombra no chão pontilhada (padrão fixo);
+- personagens montados por partes: caminhada de 4 quadros com balanço de 1 px e respiração parado;
+  a direção leste é o espelho da oeste;
+- validação no fim (`tools/pixelart/validacao.json`): cores fora da paleta, máximo de cores,
+  pixels soltos e tremido das animações. Se algo falhar, o script avisa e sai com erro.
 
 ```bash
 python3 tools/pixelart/gerar_sprites.py
 ```
 
-Os PNGs podem ser retocados no Aseprite. `tools/pixelart/previa.png` mostra todos os sprites.
+Os PNGs podem ser retocados no Aseprite. `tools/pixelart/previa.png` mostra todos os sprites e
+`tools/pixelart/tecnico_andando.gif` mostra a caminhada nas 4 direções.
 
 ### Teste automático
 

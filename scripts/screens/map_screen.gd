@@ -38,6 +38,7 @@ var signs := {}
 var player_pos := Vector2.ZERO      # em pixels, relativo à origem do mapa (pés do personagem)
 var facing := "baixo"
 var _walk_t := 0.0
+var _idle_t := 0.0
 var _moving := false
 var _route: Array = []              # pontos para andar sozinho
 var _route_target := 0
@@ -231,6 +232,7 @@ func _process(delta: float) -> void:
 			dir = to.normalized()
 			player_pos += dir * minf(SPEED * delta, to.length())
 	_moving = dir != Vector2.ZERO
+	_idle_t += delta
 	if _moving:
 		_walk_t += delta
 		if absf(dir.x) > absf(dir.y):
@@ -327,8 +329,7 @@ func _draw_room(r: Dictionary) -> void:
 
 
 func _draw_player(o: Vector2) -> void:
-	var frame := int(_walk_t * 8.0) % 2 if _moving else 0
-	var name := "tecnico_%s_%d" % [facing, frame]
+	var name := Walker.frame_name("tecnico", facing, _moving, _walk_t, _idle_t)
 	var sz := Sprites.size_of(name)
 	var feet := o + player_pos
 	map.draw_rect(Rect2(feet + Vector2(-sz.x * 0.3, -6), Vector2(sz.x * 0.6, 8)), Color(0.1, 0.1, 0.25, 0.3))

@@ -1,0 +1,767 @@
+{
+  "sprites": {
+    "piso_tijolo": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 4,
+      "pixels_soltos": 0
+    },
+    "piso_madeira": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 4,
+      "pixels_soltos": 0
+    },
+    "piso_frio": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 4,
+      "pixels_soltos": 0
+    },
+    "piso_corredor": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 3,
+      "pixels_soltos": 0
+    },
+    "parede": {
+      "tamanho": [
+        16,
+        32
+      ],
+      "cores": 6,
+      "pixels_soltos": 0
+    },
+    "moldura": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 3,
+      "pixels_soltos": 0
+    },
+    "quadro": {
+      "tamanho": [
+        32,
+        18
+      ],
+      "cores": 8,
+      "pixels_soltos": 0
+    },
+    "relogio": {
+      "tamanho": [
+        10,
+        10
+      ],
+      "cores": 6,
+      "pixels_soltos": 0
+    },
+    "janela": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 6,
+      "pixels_soltos": 0
+    },
+    "cartaz_rede": {
+      "tamanho": [
+        10,
+        12
+      ],
+      "cores": 6,
+      "pixels_soltos": 0
+    },
+    "cartaz_wifi": {
+      "tamanho": [
+        10,
+        12
+      ],
+      "cores": 5,
+      "pixels_soltos": 0
+    },
+    "bilhete": {
+      "tamanho": [
+        9,
+        9
+      ],
+      "cores": 3,
+      "pixels_soltos": 0
+    },
+    "extintor": {
+      "tamanho": [
+        9,
+        13
+      ],
+      "cores": 8,
+      "pixels_soltos": 0
+    },
+    "mesa": {
+      "tamanho": [
+        32,
+        16
+      ],
+      "cores": 7,
+      "pixels_soltos": 18
+    },
+    "mesinha": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 7,
+      "pixels_soltos": 4
+    },
+    "cadeira": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 7,
+      "pixels_soltos": 2
+    },
+    "estante": {
+      "tamanho": [
+        16,
+        32
+      ],
+      "cores": 16,
+      "pixels_soltos": 0
+    },
+    "armario": {
+      "tamanho": [
+        16,
+        32
+      ],
+      "cores": 6,
+      "pixels_soltos": 0
+    },
+    "arquivo": {
+      "tamanho": [
+        16,
+        24
+      ],
+      "cores": 5,
+      "pixels_soltos": 0
+    },
+    "planta": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 9,
+      "pixels_soltos": 0
+    },
+    "rack": {
+      "tamanho": [
+        16,
+        32
+      ],
+      "cores": 7,
+      "pixels_soltos": 0
+    },
+    "porta": {
+      "tamanho": [
+        16,
+        24
+      ],
+      "cores": 8,
+      "pixels_soltos": 0
+    },
+    "impressora": {
+      "tamanho": [
+        32,
+        26
+      ],
+      "cores": 14,
+      "pixels_soltos": 18
+    },
+    "sensor_temp": {
+      "tamanho": [
+        32,
+        26
+      ],
+      "cores": 13,
+      "pixels_soltos": 4
+    },
+    "bit": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 11,
+      "pixels_soltos": 0
+    },
+    "bit_feliz": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 10,
+      "pixels_soltos": 0
+    },
+    "bit_pensando": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 10,
+      "pixels_soltos": 0
+    },
+    "pc_off": {
+      "tamanho": [
+        32,
+        26
+      ],
+      "cores": 16,
+      "pixels_soltos": 18
+    },
+    "notebook_off": {
+      "tamanho": [
+        32,
+        26
+      ],
+      "cores": 14,
+      "pixels_soltos": 18
+    },
+    "servidor_off": {
+      "tamanho": [
+        32,
+        26
+      ],
+      "cores": 6,
+      "pixels_soltos": 0
+    },
+    "switch_off": {
+      "tamanho": [
+        64,
+        16
+      ],
+      "cores": 6,
+      "pixels_soltos": 0
+    },
+    "ap_off": {
+      "tamanho": [
+        32,
+        26
+      ],
+      "cores": 13,
+      "pixels_soltos": 4
+    },
+    "painel_off": {
+      "tamanho": [
+        32,
+        26
+      ],
+      "cores": 11,
+      "pixels_soltos": 18
+    },
+    "lampada_off": {
+      "tamanho": [
+        32,
+        26
+      ],
+      "cores": 13,
+      "pixels_soltos": 4
+    },
+    "sensor_pres_off": {
+      "tamanho": [
+        32,
+        26
+      ],
+      "cores": 15,
+      "pixels_soltos": 4
+    },
+    "pc_on": {
+      "tamanho": [
+        32,
+        26
+      ],
+      "cores": 18,
+      "pixels_soltos": 18
+    },
+    "notebook_on": {
+      "tamanho": [
+        32,
+        26
+      ],
+      "cores": 16,
+      "pixels_soltos": 18
+    },
+    "servidor_on": {
+      "tamanho": [
+        32,
+        26
+      ],
+      "cores": 8,
+      "pixels_soltos": 0
+    },
+    "switch_on": {
+      "tamanho": [
+        64,
+        16
+      ],
+      "cores": 7,
+      "pixels_soltos": 0
+    },
+    "ap_on": {
+      "tamanho": [
+        32,
+        26
+      ],
+      "cores": 15,
+      "pixels_soltos": 4
+    },
+    "painel_on": {
+      "tamanho": [
+        32,
+        26
+      ],
+      "cores": 14,
+      "pixels_soltos": 18
+    },
+    "lampada_on": {
+      "tamanho": [
+        32,
+        26
+      ],
+      "cores": 13,
+      "pixels_soltos": 47
+    },
+    "sensor_pres_on": {
+      "tamanho": [
+        32,
+        26
+      ],
+      "cores": 15,
+      "pixels_soltos": 4
+    },
+    "tecnico_baixo_0": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 16,
+      "pixels_soltos": 0
+    },
+    "tecnico_baixo_1": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 15,
+      "pixels_soltos": 0
+    },
+    "tecnico_baixo_2": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 16,
+      "pixels_soltos": 0
+    },
+    "tecnico_baixo_3": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 15,
+      "pixels_soltos": 0
+    },
+    "tecnico_baixo_parado_0": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 15,
+      "pixels_soltos": 0
+    },
+    "tecnico_baixo_parado_1": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 15,
+      "pixels_soltos": 0
+    },
+    "tecnico_cima_0": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 14,
+      "pixels_soltos": 0
+    },
+    "tecnico_cima_1": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 13,
+      "pixels_soltos": 0
+    },
+    "tecnico_cima_2": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 14,
+      "pixels_soltos": 0
+    },
+    "tecnico_cima_3": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 13,
+      "pixels_soltos": 0
+    },
+    "tecnico_cima_parado_0": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 13,
+      "pixels_soltos": 0
+    },
+    "tecnico_cima_parado_1": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 13,
+      "pixels_soltos": 0
+    },
+    "tecnico_esquerda_0": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 14,
+      "pixels_soltos": 0
+    },
+    "tecnico_direita_0": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 14,
+      "pixels_soltos": 0
+    },
+    "tecnico_esquerda_1": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 14,
+      "pixels_soltos": 0
+    },
+    "tecnico_direita_1": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 14,
+      "pixels_soltos": 0
+    },
+    "tecnico_esquerda_2": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 14,
+      "pixels_soltos": 0
+    },
+    "tecnico_direita_2": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 14,
+      "pixels_soltos": 0
+    },
+    "tecnico_esquerda_3": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 14,
+      "pixels_soltos": 0
+    },
+    "tecnico_direita_3": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 14,
+      "pixels_soltos": 0
+    },
+    "tecnico_esquerda_parado_0": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 14,
+      "pixels_soltos": 0
+    },
+    "tecnico_direita_parado_0": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 14,
+      "pixels_soltos": 0
+    },
+    "tecnico_esquerda_parado_1": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 14,
+      "pixels_soltos": 0
+    },
+    "tecnico_direita_parado_1": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 14,
+      "pixels_soltos": 0
+    },
+    "visitante_baixo_0": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 15,
+      "pixels_soltos": 0
+    },
+    "visitante_baixo_1": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 14,
+      "pixels_soltos": 0
+    },
+    "visitante_baixo_2": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 15,
+      "pixels_soltos": 0
+    },
+    "visitante_baixo_3": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 14,
+      "pixels_soltos": 0
+    },
+    "visitante_baixo_parado_0": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 14,
+      "pixels_soltos": 0
+    },
+    "visitante_baixo_parado_1": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 14,
+      "pixels_soltos": 0
+    },
+    "visitante_cima_0": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 14,
+      "pixels_soltos": 0
+    },
+    "visitante_cima_1": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 13,
+      "pixels_soltos": 0
+    },
+    "visitante_cima_2": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 14,
+      "pixels_soltos": 0
+    },
+    "visitante_cima_3": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 13,
+      "pixels_soltos": 0
+    },
+    "visitante_cima_parado_0": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 13,
+      "pixels_soltos": 0
+    },
+    "visitante_cima_parado_1": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 13,
+      "pixels_soltos": 0
+    },
+    "visitante_esquerda_0": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 14,
+      "pixels_soltos": 0
+    },
+    "visitante_direita_0": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 14,
+      "pixels_soltos": 0
+    },
+    "visitante_esquerda_1": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 14,
+      "pixels_soltos": 0
+    },
+    "visitante_direita_1": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 14,
+      "pixels_soltos": 0
+    },
+    "visitante_esquerda_2": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 14,
+      "pixels_soltos": 0
+    },
+    "visitante_direita_2": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 14,
+      "pixels_soltos": 0
+    },
+    "visitante_esquerda_3": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 14,
+      "pixels_soltos": 0
+    },
+    "visitante_direita_3": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 14,
+      "pixels_soltos": 0
+    },
+    "visitante_esquerda_parado_0": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 14,
+      "pixels_soltos": 0
+    },
+    "visitante_direita_parado_0": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 14,
+      "pixels_soltos": 0
+    },
+    "visitante_esquerda_parado_1": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 14,
+      "pixels_soltos": 0
+    },
+    "visitante_direita_parado_1": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 14,
+      "pixels_soltos": 0
+    },
+    "visitante": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 15,
+      "pixels_soltos": 0
+    }
+  },
+  "problemas": [],
+  "animacoes": {
+    "tecnico_baixo_andar": {
+      "quadros": 4,
+      "maior_tremido_px": 0.65
+    },
+    "tecnico_cima_andar": {
+      "quadros": 4,
+      "maior_tremido_px": 0.65
+    },
+    "tecnico_esquerda_andar": {
+      "quadros": 4,
+      "maior_tremido_px": 0.84
+    },
+    "visitante_baixo_andar": {
+      "quadros": 4,
+      "maior_tremido_px": 0.65
+    },
+    "visitante_cima_andar": {
+      "quadros": 4,
+      "maior_tremido_px": 0.65
+    },
+    "visitante_esquerda_andar": {
+      "quadros": 4,
+      "maior_tremido_px": 0.84
+    }
+  }
+}

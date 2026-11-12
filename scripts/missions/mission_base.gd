@@ -61,8 +61,8 @@ func _ready() -> void:
 	DeviceView.interceptor = _walk_and_use
 	setup()
 	walker = Walker.new()
+	walker.visible = false
 	stage.add_child(walker)
-	_place_walker.call_deferred()
 
 
 func _exit_tree() -> void:
@@ -302,6 +302,12 @@ func _interactives() -> Array:
 func _update_walker(delta: float) -> void:
 	if walker == null:
 		return
+	if not walker.visible:
+		# só posiciona quando a sala já tem o tamanho final
+		if stage.size.y < Room.WALL_H + 120:
+			return
+		_place_walker()
+		walker.visible = true
 	if not walker.walking_to_target() and not busy:
 		var dir := Vector2.ZERO
 		if Input.is_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT):

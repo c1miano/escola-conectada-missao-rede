@@ -16,8 +16,7 @@ func _init() -> void:
 
 func _process(delta: float) -> void:
 	_blink += delta
-	if fmod(_blink, 4.0) < 0.15 or fmod(_blink, 4.0) > 3.85:
-		queue_redraw()
+	queue_redraw()
 
 
 func celebrate() -> void:
@@ -37,4 +36,6 @@ func _draw() -> void:
 		name = "bit_pensando"
 	if fmod(_blink, 4.0) < 0.15 and mood == "normal":
 		name = "bit_pensando"
-	Sprites.draw_centered(self, name, size / 2.0, 6)
+	# flutua 1 "pixel" do sprite para cima e para baixo (movimento em degraus, sem borrar)
+	var bob := -6.0 if fmod(_blink, 1.2) < 0.6 else 0.0
+	Sprites.draw_centered(self, name, size / 2.0 + Vector2(0, bob), 6)
