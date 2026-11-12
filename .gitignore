@@ -1,3 +1,6 @@
-node_modules/
-.DS_Store
-*.log
+# Godot
+.godot/
+/build/
+/android/
+export_credentials.cfg
+*.translation
