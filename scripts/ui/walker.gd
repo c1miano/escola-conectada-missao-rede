@@ -15,6 +15,12 @@ var _target := Vector2.INF
 var _on_arrive: Callable
 
 
+func _ready() -> void:
+	# usa o avatar escolhido pelo jogador
+	if Game.has_save():
+		who = Game.avatar_sprite()
+
+
 func _init() -> void:
 	size = Vector2(16, 16) * SCALE
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -89,7 +95,7 @@ func _face(dir: Vector2) -> void:
 		facing = "baixo" if dir.y > 0 else "cima"
 
 
-var who := "tecnico"
+var who := "tecnico"   # trocado pelo avatar do jogador em _ready
 var _idle_t := 0.0
 
 

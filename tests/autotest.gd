@@ -91,6 +91,10 @@ func solve_1(ms) -> void:
 	await shot("m1_andando")
 	await wait(2.0)
 	await shot("m1_chegou")
+	if ms.walker.who != Game.avatar_sprite():
+		failures.append("avatar na missão: %s" % ms.walker.who)
+	else:
+		print("Avatar escolhido aparece na missão (%s)" % ms.walker.who)
 	if ms.devices[2].selected:
 		print("Personagem andou até o equipamento e usou")
 	else:

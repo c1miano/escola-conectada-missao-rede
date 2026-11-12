@@ -70,5 +70,5 @@ func _draw_scene(c: Control) -> void:
 		[["janela", 0.12], ["quadro", 0.3], ["relogio", 0.42], ["cartaz_rede", 0.58], ["janela", 0.72], ["cartaz_wifi", 0.86]],
 		[["pc_on", Vector2(0.08, 0.3)], ["servidor_on", Vector2(0.92, 0.25)], ["estante", Vector2(0.97, 0.8)], ["planta", Vector2(0.03, 0.9)]])
 	c.draw_rect(Rect2(Vector2.ZERO, c.size), Color(0.08, 0.1, 0.22, 0.35))
-	Sprites.draw_centered(c, "tecnico_baixo_0", Vector2(c.size.x * 0.13, c.size.y * 0.72), 8)
+	Sprites.draw_centered(c, (Game.avatar_sprite() if Game.has_save() else "tecnico") + "_baixo_0", Vector2(c.size.x * 0.13, c.size.y * 0.72), 8)
 	Sprites.draw_centered(c, "bit_feliz", Vector2(c.size.x * 0.87, c.size.y * 0.72), 8)
