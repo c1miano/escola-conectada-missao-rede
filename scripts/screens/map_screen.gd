@@ -8,7 +8,17 @@ const ROWS := 12
 const T := 16 * Sprites.SCALE      # tamanho do tile na tela
 const SPEED := 300.0
 
-## Salas: id, retângulo (em tiles), piso, se a porta fica em cima do corredor (sala de cima) ou embaixo
+## Salas por andar: id, retângulo (em tiles), piso, se a porta fica em cima do corredor ou embaixo.
+## id 0 = Pátio da Feira (térreo); id -1 = Escada (andar de cima).
+const FLOOR_NAMES := ["Térreo", "Andar de cima"]
+const ROOMS_1 := [
+	{"id": 6, "rect": Rect2i(0, 0, 8, 5), "floor": "piso_madeira", "top": true},
+	{"id": 7, "rect": Rect2i(8, 0, 8, 5), "floor": "piso_frio", "top": true},
+	{"id": 8, "rect": Rect2i(16, 0, 8, 5), "floor": "piso_madeira", "top": true},
+	{"id": 9, "rect": Rect2i(0, 7, 8, 5), "floor": "piso_frio", "top": false},
+	{"id": 10, "rect": Rect2i(8, 7, 8, 5), "floor": "piso_tijolo", "top": false},
+	{"id": -1, "rect": Rect2i(16, 7, 8, 5), "floor": "piso_corredor", "top": false},
+]
 const ROOMS := [
 	{"id": 1, "rect": Rect2i(0, 0, 8, 5), "floor": "piso_tijolo", "top": true},
 	{"id": 2, "rect": Rect2i(8, 0, 8, 5), "floor": "piso_madeira", "top": true},
@@ -24,16 +34,26 @@ const FURNITURE := {
 	4: [["rack", Vector2(0.3, 2.5)], ["rack", Vector2(1.3, 2.5)], ["servidor_on", Vector2(5.6, 2.9)]],
 	5: [["lampada_on", Vector2(0.6, 2.9)], ["sensor_temp", Vector2(5.4, 2.9)], ["ap_on", Vector2(3.0, 3.1)]],
 	0: [["mesa", Vector2(1.0, 3.2)], ["mesa", Vector2(5.0, 3.2)], ["planta", Vector2(3.4, 3.0)]],
+	6: [["pc_on", Vector2(0.8, 2.2)], ["roteador_on", Vector2(4.6, 2.2)], ["planta", Vector2(7.0, 2.6)]],
+	7: [["testador", Vector2(1.0, 2.2)], ["mesa", Vector2(4.4, 3.0)], ["armario", Vector2(7.0, 1.6)]],
+	8: [["pc_on", Vector2(1.0, 2.2)], ["firewall_on", Vector2(4.6, 2.0)], ["arquivo", Vector2(6.9, 2.0)]],
+	9: [["rack", Vector2(0.3, 2.5)], ["rack", Vector2(1.3, 2.5)], ["rack", Vector2(2.3, 2.5)], ["roteador_on", Vector2(5.4, 2.9)]],
+	10: [["palanque", Vector2(3.4, 2.4)], ["cadeira", Vector2(1.2, 3.6)], ["cadeira", Vector2(5.6, 3.6)], ["painel_on", Vector2(5.8, 2.2)]],
+	-1: [["planta", Vector2(0.4, 3.0)], ["planta", Vector2(6.8, 3.0)]],
 }
 const WALL_DECOR := {
 	1: [["quadro", 3.5], ["relogio", 6.2]], 2: [["janela", 2.0], ["cartaz_rede", 5.0]],
 	3: [["janela", 4.0], ["cartaz_wifi", 6.5]], 4: [["cartaz_rede", 5.0], ["extintor", 7.4]],
 	5: [["quadro", 5.0], ["cartaz_wifi", 2.0]], 0: [["janela", 1.5], ["janela", 6.0]],
+	6: [["quadro", 3.0], ["relogio", 6.0]], 7: [["cartaz_rede", 2.0], ["extintor", 7.4]],
+	8: [["janela", 2.0], ["cartaz_wifi", 6.0]], 9: [["cartaz_rede", 5.0], ["relogio", 6.5]],
+	10: [["faixa", 4.0]], -1: [["janela", 2.0], ["janela", 6.0]],
 }
 
 var map: Control
 var bubble: Label
-var bit: BitView
+var bit: BitSpeaker
+var andar := -1                     # andar mostrado (-1 = escolher pelo progresso)
 var signs := {}
 var player_pos := Vector2.ZERO      # em pixels, relativo à origem do mapa (pés do personagem)
 var facing := "baixo"
@@ -44,7 +64,26 @@ var _route: Array = []              # pontos para andar sozinho
 var _route_target := 0
 
 
+func configure(params: Dictionary) -> void:
+	andar = int(params.get("andar", -1))
+
+
+func _rooms() -> Array:
+	return ROOMS if andar == 0 else ROOMS_1
+
+
+func _room(id: int) -> Dictionary:
+	for r in _rooms():
+		if r.id == id:
+			return r
+	return {}
+
+
 func build() -> void:
+	if andar < 0:
+		andar = int(Game.mission_info(Game.next_mission()).get("andar", 0))
+		if not Game.floor_unlocked(andar):
+			andar = 0
 	background(Palette.FRAME_DARK)
 	var margin := MarginContainer.new()
 	margin.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -62,8 +101,8 @@ func build() -> void:
 	map.resized.connect(_layout)
 	map.clip_contents = true
 	root.add_child(map)
-	for r in ROOMS:
-		if r.id == 0:
+	for r in _rooms():
+		if r.id <= 0:
 			continue
 		var sign := RoomSign.new(Game.mission_info(r.id))
 		var id: int = r.id
@@ -78,18 +117,17 @@ func build() -> void:
 	bottom.grow_vertical = Control.GROW_DIRECTION_BEGIN
 	bottom.position = Vector2(-24, -24)
 	add_child(bottom)
+	bottom.alignment = BoxContainer.ALIGNMENT_END
 	var bp := PanelContainer.new()
 	bp.custom_minimum_size = Vector2(250, 0)
+	bp.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	bottom.add_child(bp)
 	bubble = Label.new()
 	bubble.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	bubble.add_theme_font_size_override("font_size", Game.fs(17))
+	bubble.add_theme_font_size_override("font_size", Game.fs(19))
 	bp.add_child(bubble)
-	var holder := Control.new()
-	holder.custom_minimum_size = Vector2(96, 100)
-	bottom.add_child(holder)
-	bit = BitView.new()
-	holder.add_child(bit)
+	bit = BitSpeaker.new()
+	bottom.add_child(bit)
 	_greet()
 	_focus_next_room.call_deferred()
 	set_process(true)
@@ -100,24 +138,40 @@ func _top_bar(root: VBoxContainer) -> void:
 	root.add_child(top)
 	var row := HBoxContainer.new()
 	top.add_child(row)
+	row.add_child(AvatarView.new(Game.avatar, 3))
+	var who := VBoxContainer.new()
+	who.add_theme_constant_override("separation", -4)
+	row.add_child(who)
 	var t := Label.new()
-	t.text = "Mapa da Escola"
+	t.text = Game.student_name
 	t.add_theme_font_size_override("font_size", Game.fs(24))
 	t.add_theme_color_override("font_color", Palette.PRIMARY_DARK)
-	row.add_child(t)
-	var stars := Control.new()
-	stars.custom_minimum_size = Vector2(240, 46)
-	stars.draw.connect(func():
-		for i in Game.MISSIONS.size():
-			var c := Vector2(26 + i * 46, 23)
-			if Game.is_completed(i + 1):
-				stars.draw_colored_polygon(Icons.star_points(c, 19), Palette.STAR)
-			Icons.draw(stars, "star_empty", c, 20, Palette.STAR_DARK))
-	row.add_child(stars)
+	who.add_child(t)
 	var count := Label.new()
-	count.text = "%d de %d" % [Game.completed.size(), Game.MISSIONS.size()]
-	count.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	row.add_child(count)
+	count.text = "%d de %d missões" % [Game.completed.size(), Game.MISSIONS.size()]
+	count.add_theme_color_override("font_color", Palette.TEXT_SOFT)
+	who.add_child(count)
+	var score := Control.new()
+	score.custom_minimum_size = Vector2(230, 40)
+	score.draw.connect(func():
+		score.draw_colored_polygon(Icons.star_points(Vector2(18, 20), 14), Palette.STAR)
+		Icons.draw(score, "star_empty", Vector2(18, 20), 14, Palette.STAR_DARK)
+		var f := Game.ui_font
+		var fsz := Game.fs(24)
+		score.draw_string(f, Vector2(38, 20 + fsz * 0.35), "%d/%d   %d pontos" % [Game.total_stars(), Game.MISSIONS.size() * 3, Game.total_points()], HORIZONTAL_ALIGNMENT_LEFT, -1, fsz, Palette.TEXT))
+	row.add_child(score)
+	var spacer := Control.new()
+	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_child(spacer)
+	for i in FLOOR_NAMES.size():
+		var fi := i
+		var open := Game.floor_unlocked(i)
+		var fb := button(row, FLOOR_NAMES[i], "home" if i == 0 else ("lock" if not open else "next"), func():
+			if Game.floor_unlocked(fi):
+				Game.goto("map", {"andar": fi})
+			else:
+				_say("O andar de cima abre quando você terminar a missão 5.", "pensando"), "success" if i == andar else "secondary", 54)
+		fb.tooltip_text = "Ir para o %s" % FLOOR_NAMES[i] if open else "Termine a missão 5 para abrir"
 	if Game.all_completed():
 		button(row, "Certificado", "certificate", func(): Game.goto("final"), "star", 54)
 	button(row, "Configurações", "gear", func(): Game.goto("settings"), "secondary", 54)
@@ -144,7 +198,7 @@ func _corridor_y() -> float:
 
 
 func _layout() -> void:
-	for r in ROOMS:
+	for r in _rooms():
 		if not signs.has(r.id):
 			continue
 		var sign: Control = signs[r.id]
@@ -153,8 +207,10 @@ func _layout() -> void:
 		var floor_top := rp.position.y + 2 * T
 		sign.position = Vector2(rp.get_center().x - sign.size.x / 2.0, floor_top + (rp.end.y - floor_top) / 2.0 - sign.size.y / 2.0 + 6).round()
 	if player_pos == Vector2.ZERO:
-		var next := mini(Game.completed.size() + 1, Game.MISSIONS.size())
-		player_pos = Vector2(_door_x(ROOMS[next - 1]) - T, _corridor_y())
+		var r := _room(Game.next_mission())
+		if r.is_empty():
+			r = _rooms()[0]
+		player_pos = Vector2(_door_x(r) - T, _corridor_y())
 	map.queue_redraw()
 
 
@@ -164,10 +220,19 @@ func _greet() -> void:
 		msg = "A escola está toda conectada! A feira pode começar. Você pode repetir qualquer missão."
 		bit.mood = "feliz"
 	elif Game.completed.is_empty():
-		msg = "Olá! Eu sou o Bit. Clique na placa do Laboratório para começar. Você também pode andar com as setas."
+		msg = "Olá, %s! Eu sou o Bit. Clique na placa do Laboratório para começar. Você também pode andar com as setas." % Game.student_name
 	else:
-		msg = "Muito bem! Agora vá para: %s." % Game.mission_info(Game.completed.size() + 1).place
+		var nm := Game.mission_info(Game.next_mission())
+		msg = "Muito bem! Agora vá para: %s." % nm.place
+		if int(nm.andar) != andar:
+			msg += " Fica no %s: use o botão lá em cima." % FLOOR_NAMES[int(nm.andar)]
+	_say(msg, bit.mood)
+
+
+func _say(msg: String, mood: String = "normal") -> void:
 	bubble.text = msg
+	bit.mood = mood
+	bit.talk(msg)
 	Voice.say(msg)
 
 
@@ -183,13 +248,10 @@ func _focus_next_room() -> void:
 # ------------------------------------------------------------------ movimento
 func _go_to_room(id: int) -> void:
 	if not Game.is_unlocked(id):
-		var msg := "Esta sala ainda está fechada. Termine a missão %d primeiro." % (id - 1)
-		bubble.text = msg
-		bit.mood = "pensando"
-		Voice.say(msg)
+		_say("Esta sala ainda está fechada. Termine a missão %d primeiro." % (id - 1), "pensando")
 		Sfx.play("retry")
 		return
-	var r: Dictionary = ROOMS[id - 1]
+	var r: Dictionary = _room(id)
 	var dx := _door_x(r)
 	var into_y := (4.2 if r.top else 8.6) * T
 	_route = [Vector2(player_pos.x, _corridor_y()), Vector2(dx, _corridor_y()), Vector2(dx, into_y)]
@@ -253,7 +315,7 @@ func _manual_move(dir: Vector2, delta: float) -> void:
 	else:
 		p.y = clampf(p.y, cy - T * 1.6, cy + T * 1.6)
 		if door_room.top and p.y < cy - T * 1.4 or not door_room.top and p.y > cy + T * 1.4:
-			if door_room.id == 0:
+			if door_room.id <= 0:
 				p.y = clampf(p.y, cy - T * 0.6, cy + T * 0.4)
 			elif Game.is_unlocked(door_room.id):
 				player_pos = p
@@ -266,7 +328,7 @@ func _manual_move(dir: Vector2, delta: float) -> void:
 
 
 func _room_at_door(x: float) -> Dictionary:
-	for r in ROOMS:
+	for r in _rooms():
 		if absf(x - _door_x(r)) < T * 0.6:
 			return r
 	return {}
@@ -286,7 +348,7 @@ func _draw_map() -> void:
 	map.draw_rect(full.grow(6), Palette.FRAME)
 	# corredor
 	Sprites.tile(map, "piso_corredor", Rect2(o + Vector2(0, 5 * T), Vector2(COLS * T, 2 * T)))
-	for r in ROOMS:
+	for r in _rooms():
 		_draw_room(r)
 	_draw_player(o)
 	if Game.all_completed():
@@ -316,11 +378,11 @@ func _draw_room(r: Dictionary) -> void:
 		Sprites.draw(map, "porta", Vector2(dx - T / 2.0, rp.position.y + 2 * T - Sprites.size_of("porta").y))
 		map.draw_rect(Rect2(Vector2(dx - T / 2.0, rp.position.y + 2 * T - 4), Vector2(T, 6)), Palette.FRAME)
 	# sala fechada: escurecida + cadeado grande (além do texto na placa)
-	if r.id != 0 and not Game.is_unlocked(r.id):
+	if r.id > 0 and not Game.is_unlocked(r.id):
 		map.draw_rect(rp, Color(0.08, 0.1, 0.2, 0.45))
-	if r.id == 0:
+	if r.id <= 0:
 		var font := Game.ui_font
-		var label := "Pátio da Feira"
+		var label := "Pátio da Feira" if r.id == 0 else "Escada"
 		var fsz := Game.fs(20)
 		var w := font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, fsz).x
 		var box := Rect2(Vector2(rp.get_center().x - w / 2.0 - 8, rp.position.y + 2 * T + 8), Vector2(w + 16, fsz + 10))
@@ -330,7 +392,7 @@ func _draw_room(r: Dictionary) -> void:
 
 
 func _draw_player(o: Vector2) -> void:
-	var name := Walker.frame_name("tecnico", facing, _moving, _walk_t, _idle_t)
+	var name := Walker.frame_name(Game.avatar_sprite(), facing, _moving, _walk_t, _idle_t)
 	var sz := Sprites.size_of(name)
 	var feet := o + player_pos
 	map.draw_rect(Rect2(feet + Vector2(-sz.x * 0.3, -6), Vector2(sz.x * 0.6, 8)), Color(0.1, 0.1, 0.25, 0.3))

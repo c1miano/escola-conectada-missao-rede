@@ -57,12 +57,15 @@ func _draw_certificate(c: Control) -> void:
 	var who: String = Game.student_name.strip_edges()
 	if who != "":
 		lines.append(["Entregue a: " + who, 28, Palette.TEXT, 280])
-	lines.append(["Data: " + Time.get_date_string_from_system(), 22, Palette.TEXT_SOFT, 330])
+	lines.append(["%d pontos  ·  %d de %d estrelas" % [Game.total_points(), Game.total_stars(), Game.MISSIONS.size() * 3], 26, Palette.PRIMARY_DARK, 312])
+	var dd := Time.get_date_dict_from_system()
+	lines.append(["Data: %02d/%02d/%04d" % [dd.day, dd.month, dd.year], 22, Palette.TEXT_SOFT, 345])
 	for l in lines:
 		var w := font.get_string_size(l[0], HORIZONTAL_ALIGNMENT_LEFT, -1, l[1]).x
 		c.draw_string(font, Vector2((s.x - w) / 2.0, l[3]), l[0], HORIZONTAL_ALIGNMENT_LEFT, -1, l[1], l[2])
+	Sprites.draw(c, "avatar_%d_baixo_parado_0" % Game.avatar, Vector2(60, s.y - 150), 6)
 	for i in 5:
-		var p := Vector2(s.x / 2.0 - 120 + i * 60, 385)
+		var p := Vector2(s.x / 2.0 - 120 + i * 60, 390)
 		c.draw_colored_polygon(Icons.star_points(p, 24), Palette.STAR)
 	c.draw_string(font, Vector2(s.x - 190, s.y - 40), "Assinado: Bit", HORIZONTAL_ALIGNMENT_LEFT, -1, 22, Palette.TEXT_SOFT)
 

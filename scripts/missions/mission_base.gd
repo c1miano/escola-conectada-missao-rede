@@ -44,6 +44,10 @@ var floor_tile := "piso_tijolo"
 var wall_items: Array = [["janela", 0.32], ["quadro", 0.52], ["relogio", 0.64], ["cartaz_rede", 0.74], ["janela", 0.86], ["extintor", 0.97]]
 var floor_items: Array = []
 var _finished := false
+# pontuação desta partida
+var _retries := 0
+var _hints_used := 0
+var _quiz_first_try := 0
 var walker: Walker
 var use_button: BigButton
 var _near: Control = null          # equipamento perto do personagem
@@ -111,7 +115,7 @@ func _build_layout() -> void:
 	titles.add_theme_constant_override("separation", 2)
 	top_row.add_child(titles)
 	title_label = Label.new()
-	title_label.text = "Missão %d — %s" % [mission_id, info.get("title", "")]
+	title_label.text = "Missão %d — %s   ·   Nível %d de %d" % [mission_id, info.get("title", ""), mission_id, Game.MISSIONS.size()]
 	title_label.add_theme_font_size_override("font_size", Game.fs(28))
 	title_label.add_theme_color_override("font_color", Palette.PRIMARY_DARK)
 	titles.add_child(title_label)
@@ -530,6 +534,7 @@ func correct(text: String = "Certo!", skill: String = "") -> void:
 ## Resposta para tentar de novo: sem punição. Explica e, no Modo Guiado, destaca o objeto certo.
 func try_again(explanation: String) -> void:
 	Game.record_attempt(mission_id, false)
+	_retries += 1
 	show_feedback(false, "Vamos tentar de novo")
 	say(explanation, "pensando")
 	if guided and not _targets.is_empty():
@@ -556,6 +561,7 @@ func show_feedback(ok: bool, text: String) -> void:
 # ================================================================== ajuda (3 níveis)
 func _on_help() -> void:
 	_hint_level = mini(_hint_level + 1, 3)
+	_hints_used += 1
 	Game.record_hint(mission_id, _hint_level)
 	if _hints.is_empty():
 		say("Leia o objetivo lá em cima. Você consegue!")
@@ -672,6 +678,8 @@ func ask_question(quiz: Dictionary, on_done: Callable, header: String = "Pergunt
 		var idx: int = i
 		b.pressed.connect(func():
 			if idx == int(quiz.answer):
+				if not quiz.get("_errou", false):
+					_quiz_first_try += 1
 				Game.record_attempt(mission_id, true)
 				Game.record_skill(mission_id, "Desafio extra: " + str(quiz.get("skill", quiz.q)))
 				Sfx.play("ok")
@@ -679,6 +687,8 @@ func ask_question(quiz: Dictionary, on_done: Callable, header: String = "Pergunt
 				on_done.call()
 			else:
 				Game.record_attempt(mission_id, false)
+				_retries += 1
+				quiz["_errou"] = true
 				Sfx.play("retry")
 				b.disabled = true
 				b.text = "Tente outra: " + str(quiz.options[idx])
@@ -744,38 +754,75 @@ func _make_overlay(title: String = "", width: float = 560.0) -> Control:
 
 func _finish(message: String) -> void:
 	Game.complete_mission(mission_id)
+	var sc := Game.compute_score(mission_id, _retries, _hints_used, not guided, _quiz_first_try)
+	var record := Game.record_score(mission_id, sc)
 	Sfx.play("win")
 	bit.celebrate()
-	var ov := _make_overlay("Missão concluída", 480.0)
+	var ov := _make_overlay("Missão %d concluída" % mission_id, 470.0)
 	var box := ov.get_meta("box") as VBoxContainer
 	box.alignment = BoxContainer.ALIGNMENT_CENTER
-	var star := Control.new()
-	star.custom_minimum_size = Vector2(130, 120)
-	star.pivot_offset = Vector2(65, 60)
-	star.draw.connect(func():
-		star.draw_circle(Vector2(65, 60), 56, Color(1, 0.9, 0.4, 0.35))
-		star.draw_colored_polygon(Icons.star_points(Vector2(65, 60), 50), Palette.STAR)
-		var p := Icons.star_points(Vector2(65, 60), 50)
-		p.append(p[0])
-		star.draw_polyline(p, Palette.STAR_DARK, 5, true))
-	box.add_child(star)
+	# estrelas ganhas (1 a 3), animadas uma de cada vez
+	var stars := Control.new()
+	stars.custom_minimum_size = Vector2(0, 74)
+	var shown := {"n": 0}
+	stars.draw.connect(func():
+		for i in 3:
+			var c := Vector2(stars.size.x / 2.0 + (i - 1) * 70, 38)
+			var r := 30.0 if i == 1 else 26.0
+			if i < shown.n:
+				stars.draw_colored_polygon(Icons.star_points(c, r), Palette.STAR)
+			Icons.draw(stars, "star_empty", c, r, Palette.STAR_DARK))
+	box.add_child(stars)
 	var title := Label.new()
-	title.text = "Missão %d concluída!" % mission_id
+	title.text = "%d estrela%s!" % [sc.estrelas, "" if sc.estrelas == 1 else "s"]
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.add_theme_font_size_override("font_size", Game.fs(34))
+	title.add_theme_font_size_override("font_size", Game.fs(30))
 	title.add_theme_color_override("font_color", Palette.SUCCESS)
 	box.add_child(title)
 	var msg := Label.new()
 	msg.text = message
 	msg.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	msg.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	msg.add_theme_font_size_override("font_size", Game.fs(28))
 	box.add_child(msg)
+	# quadro de pontos (só soma: tentativas e dicas reduzem o bônus, nunca tiram pontos)
+	var grid := GridContainer.new()
+	grid.columns = 2
+	grid.add_theme_constant_override("h_separation", 24)
+	grid.add_theme_constant_override("v_separation", 2)
+	var rows := [["Missão concluída (nível %d)" % mission_id, sc.base], ["Bônus de precisão", sc.precisao],
+		["Bônus de autonomia", sc.autonomia]]
+	if not guided:
+		rows.append(["Bônus do Explorador", sc.explorador])
+	for r in rows:
+		var a := Label.new()
+		a.text = r[0]
+		grid.add_child(a)
+		var b := Label.new()
+		b.text = "+%d" % r[1]
+		b.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		grid.add_child(b)
+	var ta := Label.new()
+	ta.text = "Total"
+	ta.add_theme_color_override("font_color", Palette.PRIMARY_DARK)
+	grid.add_child(ta)
+	var tb := Label.new()
+	tb.text = "%d pontos" % sc.pontos
+	tb.add_theme_color_override("font_color", Palette.PRIMARY_DARK)
+	tb.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	grid.add_child(tb)
+	var center := CenterContainer.new()
+	center.add_child(grid)
+	box.add_child(center)
+	var note := Label.new()
+	note.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	note.add_theme_color_override("font_color", Palette.TEXT_SOFT)
+	note.text = ("Novo recorde nesta missão!" if record else "Seu recorde nesta missão: %d pontos." % Game.mission_points(mission_id)) + "  Total: %d pontos." % Game.total_points()
+	box.add_child(note)
 	var row := HBoxContainer.new()
 	row.alignment = BoxContainer.ALIGNMENT_CENTER
 	box.add_child(row)
 	var cont := BigButton.new("Continuar", "next", "success", 80)
-	cont.custom_minimum_size.x = 260
 	cont.pressed.connect(func():
 		Game.goto("final" if Game.all_completed() and mission_id == Game.MISSIONS.size() else "map"))
 	row.add_child(cont)
@@ -783,10 +830,11 @@ func _finish(message: String) -> void:
 	again.pressed.connect(func(): Game.goto("mission", {"id": mission_id}))
 	row.add_child(again)
 	cont.grab_focus.call_deferred()
-	say(message, "feliz")
-	# estrela animada (pode ser pulada clicando em Continuar)
-	star.scale = Vector2(0.2, 0.2)
-	var t := star.create_tween()
-	t.tween_property(star, "scale", Vector2(1.15, 1.15), 0.45).set_trans(Tween.TRANS_BACK)
-	t.parallel().tween_property(star, "rotation", TAU, 0.6)
-	t.tween_property(star, "scale", Vector2.ONE, 0.2)
+	say(message + " Você ganhou %d estrela%s e %d pontos." % [sc.estrelas, "" if sc.estrelas == 1 else "s", sc.pontos], "feliz")
+	var t := stars.create_tween()
+	for i in sc.estrelas:
+		t.tween_interval(0.3)
+		t.tween_callback(func():
+			shown.n += 1
+			stars.queue_redraw()
+			Sfx.play("select"))

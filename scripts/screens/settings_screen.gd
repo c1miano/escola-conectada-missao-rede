@@ -43,10 +43,10 @@ func _fill() -> void:
 	_toggle("Pular animações repetidas", "pular_animacoes", "skip")
 	_toggle("Texto grande", "texto_grande", "plus")
 
-	var name_row := _row("Nome do estudante (opcional)")
+	var name_row := _row("Nome do jogador")
 	var le := LineEdit.new()
 	le.text = Game.student_name
-	le.placeholder_text = "Pode deixar em branco"
+	le.placeholder_text = "Seu nome"
 	le.custom_minimum_size = Vector2(240, 0)
 	le.max_length = 40
 	le.text_changed.connect(func(t):

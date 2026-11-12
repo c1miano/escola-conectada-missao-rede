@@ -1,7 +1,6 @@
 extends ScreenBase
-## Tela inicial: logotipo, Jogar, Continuar, Configurações e Sair.
+## Tela inicial: logotipo, Continuar como <jogador>, Trocar/Novo jogador, Relatório de progresso, Configurações e Sair.
 
-var _confirm: Control
 
 
 func build() -> void:
@@ -31,45 +30,22 @@ func build() -> void:
 	buttons.custom_minimum_size = Vector2(300, 0) * (Game.ui_scale() / 0.7)
 	buttons.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	col.add_child(buttons)
-	var play := button(buttons, "Jogar", "play", _on_play, "success", 80)
-	var cont := button(buttons, "Continuar", "next", func(): Game.goto("map"), "primary", 80)
-	cont.disabled = not Game.has_save()
+	var cont: BigButton = null
+	if Game.has_save():
+		cont = button(buttons, "Continuar como %s" % Game.student_name, "next", func(): Game.goto("map"), "success", 80)
+		var who := Label.new()
+		who.text = "%d de %d missões · %d pontos · %d estrelas" % [Game.completed.size(), Game.MISSIONS.size(), Game.total_points(), Game.total_stars()]
+		who.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		who.add_theme_color_override("font_color", Color.WHITE)
+		buttons.add_child(who)
+	var players := button(buttons, "Novo jogador" if not Game.has_save() else "Trocar de jogador", "user", func(): Game.goto("players"), "primary" if Game.has_save() else "success", 76)
+	if Game.has_save():
+		button(buttons, "Relatório de progresso", "report", func(): Game.goto("progress"), "star", 72)
 	button(buttons, "Configurações", "gear", func(): Game.goto("settings"), "secondary", 72)
 	var quit := button(buttons, "Sair", "exit", func(): get_tree().quit(), "secondary", 72)
 	quit.visible = not OS.has_feature("web")
-	(cont if Game.has_save() else play).grab_focus.call_deferred()
-	Voice.say("Escola Conectada: Missão Rede.")
-
-
-func _on_play() -> void:
-	if Game.completed.size() > 0:
-		_ask_restart()
-	else:
-		Game.goto("mode")
-
-
-func _ask_restart() -> void:
-	_confirm = ColorRect.new()
-	(_confirm as ColorRect).color = Color(0, 0, 0, 0.6)
-	_confirm.set_anchors_preset(Control.PRESET_FULL_RECT)
-	add_child(_confirm)
-	var c := CenterContainer.new()
-	c.set_anchors_preset(Control.PRESET_FULL_RECT)
-	_confirm.add_child(c)
-	var p := PanelContainer.new()
-	p.custom_minimum_size = Vector2(460, 0)
-	c.add_child(p)
-	var box := VBoxContainer.new()
-	p.add_child(box)
-	heading(box, "Começar do início?", 30)
-	text(box, "As missões voltam a ficar fechadas. O relatório do professor continua guardado.")
-	var row := HBoxContainer.new()
-	row.alignment = BoxContainer.ALIGNMENT_CENTER
-	box.add_child(row)
-	var yes := button(row, "Sim, começar", "play", func(): Game.goto("mode"), "success")
-	button(row, "Não, voltar", "back", func(): _confirm.queue_free(), "secondary")
-	yes.grab_focus.call_deferred()
-	Voice.say("Começar do início? As missões voltam a ficar fechadas.")
+	(cont if cont else players).grab_focus.call_deferred()
+	Voice.say("Escola Conectada: Missão Rede." + (" Continuar como %s?" % Game.student_name if Game.has_save() else ""))
 
 
 func _draw_logo(c: Control) -> void:

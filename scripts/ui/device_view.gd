@@ -140,9 +140,10 @@ func _notification(what: int) -> void:
 const SPRITE := {
 	"pc": "pc", "notebook": "notebook", "server": "servidor", "switch": "switch",
 	"ap": "ap", "panel": "painel", "lamp": "lampada", "sensor_pres": "sensor_pres",
-	"sensor_temp": "sensor_temp", "printer": "impressora", "router": "ap",
+	"sensor_temp": "sensor_temp", "printer": "impressora", "router": "roteador",
+	"firewall": "firewall", "tester": "testador",
 }
-const HAS_STATE := ["pc", "notebook", "server", "switch", "ap", "panel", "sensor_pres", "router"]
+const HAS_STATE := ["pc", "notebook", "server", "switch", "ap", "panel", "sensor_pres", "router", "firewall"]
 
 
 func sprite_name() -> String:

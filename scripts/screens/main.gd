@@ -4,6 +4,9 @@ extends Control
 const SCREENS := {
 	"title": "res://scripts/screens/title_screen.gd",
 	"mode": "res://scripts/screens/mode_screen.gd",
+	"players": "res://scripts/screens/players_screen.gd",
+	"new_player": "res://scripts/screens/new_player_screen.gd",
+	"progress": "res://scripts/screens/progress_screen.gd",
 	"map": "res://scripts/screens/map_screen.gd",
 	"settings": "res://scripts/screens/settings_screen.gd",
 	"report": "res://scripts/screens/report_screen.gd",

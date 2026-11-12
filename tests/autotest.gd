@@ -12,10 +12,11 @@ func _ready() -> void:
 	var mode := parts[1] if parts.size() > 1 else "guiado"
 	shots_dir = parts[2] if parts.size() > 2 else ""
 	Game.settings.narracao = false
-	Game.new_game(mode)
+	Game.create_profile("Ana Teste", 3, mode)
 	await test_map_walk()
 	for s in ids:
 		await run_mission(int(s), mode)
+	await test_progress_report()
 	print("AUTOTESTE ", "OK" if failures.is_empty() else "FALHOU: " + str(failures))
 	get_tree().quit(0 if failures.is_empty() else 1)
 
@@ -252,3 +253,177 @@ func test_map_walk() -> void:
 		print("Mapa: técnico andou até a sala e abriu a missão")
 	else:
 		failures.append("mapa")
+
+
+func solve_6(ms) -> void:
+	await wait(0.3)
+	press_action("Testar (ping)")
+	await idle()
+	await wait(0.3)
+	ms._on_port("a", 1)              # erro: porta antes do roteador
+	ms._on_router(null)
+	ms._on_port("a", 1)
+	await wait(0.3)
+	ms._on_router(null)
+	ms._on_port("p", 1)
+	await wait(0.5)
+	await shot("m6_2_roteador")
+	ms._on_pc(ms.pc_p)
+	await wait(0.3)
+	press_action("Gateway: 192.168.1.1")   # erro proposital
+	await wait(0.3)
+	press_action("Gateway: 192.168.2.1")
+	await wait(0.4)
+	ms._on_pc(ms.pc_a)
+	await wait(0.3)
+	press_action("Gateway: 192.168.1.1")
+	await wait(0.4)
+	await shot("m6_3_gateway")
+	press_action("Testar de novo")
+	await wait(1.0)
+	await shot("m6_4_teste")
+	await idle()
+
+
+func solve_7(ms) -> void:
+	await wait(0.3)
+	press_action("Chave de fenda")
+	await wait(0.2)
+	press_action("Alicate de crimpar")
+	await wait(0.3)
+	press_action("Conector RJ-45")
+	await wait(0.3)
+	ms._pick("marrom")                   # erro proposital
+	for w in ms.ORDER:
+		ms._pick(w)
+		await wait(0.1)
+		if w == "azul":
+			await shot("m7_2_fios")
+	await wait(0.3)
+	press_action("Crimpar com o alicate")
+	await idle()
+	ms._on_tester(null)
+	await wait(1.0)
+	await shot("m7_3_teste")
+	await idle()
+	await wait(0.3)
+	press_action("O cabo é azul")
+	await wait(0.3)
+	await shot("m7_4_defeito")
+	press_action("Os fios 3 e 6 estão soltos ou trocados")
+	await wait(0.3)
+
+
+func solve_8(ms) -> void:
+	await wait(0.3)
+	ms._on_ap(null)
+	await wait(0.2)
+	press_action("Senha: 123456")
+	await wait(0.2)
+	press_action("Senha: F3ir@-Rede#26")
+	await wait(0.4)
+	ms._on_firewall(null)
+	await wait(0.4)
+	await shot("m8_2_firewall")
+	var btns: Array = ms.rules_panel.find_children("*", "Button", true, false)
+	var rules: Array = ms.RULES.slice(0, 2) if ms.guided else ms.RULES
+	for i in rules.size():
+		# botões por linha: [Permitir, Bloquear]
+		var b: Button = btns[i * 2] if rules[i].ok else btns[i * 2 + 1]
+		b.pressed.emit()
+		await wait(0.2)
+	await idle()
+	await wait(0.3)
+	ms._on_pc(null)
+	await wait(0.3)
+	await shot("m8_3_email")
+	press_action("Clicar no link")
+	await wait(0.3)
+	press_action("Apagar e avisar o professor")
+	await wait(0.3)
+
+
+func solve_9(ms) -> void:
+	await wait(0.3)
+	press_action("24")
+	await wait(0.2)
+	press_action("254")
+	await wait(0.5)
+	for k in 4:
+		var d = ms.devices[k]
+		ms._on_pc(d)
+		await wait(0.2)
+		var cards: Array = ms._cards_for(d)
+		var aluno: bool = d.get_meta("lado") == "a"
+		for ip in cards:
+			if not ms._valid(ip, aluno):
+				ms._choose_ip(ip)
+				break
+		await wait(0.2)
+		if k == 2:
+			await shot("m9_2_subrede")
+		for ip in cards:
+			if ms._valid(ip, aluno):
+				ms._choose_ip(ip)
+				break
+		await wait(0.3)
+	await wait(0.4)
+	await shot("m9_3_mascara")
+	press_action("/28 (14 computadores)")
+	await wait(0.2)
+	press_action("/27 (30 computadores)")
+	await wait(0.3)
+
+
+func solve_10(ms) -> void:
+	await wait(0.3)
+	var port := 0
+	for d in ms._cable_targets():
+		ms._on_device(d)
+		ms._on_port(port)
+		port += 1
+		await wait(0.2)
+	await wait(0.4)
+	await shot("m10_2_cabos")
+	ms._on_device(ms.server)
+	await wait(0.2)
+	press_action("Distribuir de 10.0.0.1 a .50")
+	await wait(0.2)
+	press_action("Distribuir de 192.168.1.100 a .150")
+	await idle()
+	await wait(0.3)
+	ms._on_device(ms.notebook)
+	await wait(0.2)
+	press_action("FeiraConectada")
+	await wait(0.4)
+	ms._on_device(ms.server)
+	await wait(0.2)
+	press_action("feira.escola = 192.168.1.10")
+	await wait(0.4)
+	ms._on_device(ms.totem)
+	await idle()
+	await wait(0.3)
+	await shot("m10_3_falha")
+	press_action("Trocar o cabo do totem")
+	await wait(0.2)
+	press_action("Ligar o serviço Web no servidor")
+	await wait(1.0)
+	await shot("m10_4_ok")
+	await idle()
+
+
+
+## Gera o relatório de progresso em PNG e confere se a imagem saiu com o tamanho certo.
+func test_progress_report() -> void:
+	Game.goto("progress")
+	await wait(0.6)
+	await shot("relatorio_tela")
+	var png: PackedByteArray = await ProgressCard.render_png(get_parent())
+	var img := Image.new()
+	img.load_png_from_buffer(png)
+	if img.get_width() == int(ProgressCard.W) and img.get_height() == int(ProgressCard.H):
+		print("Relatório de progresso gerado (%dx%d, %d bytes)" % [img.get_width(), img.get_height(), png.size()])
+		if shots_dir != "":
+			img.save_png(shots_dir + "/relatorio_progresso.png")
+	else:
+		failures.append("relatorio")

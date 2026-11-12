@@ -58,5 +58,14 @@ func _draw() -> void:
 	var f1 := Game.fs(18)
 	var f2 := Game.fs(21)
 	var bold := Game.ui_font_bold
-	draw_string(font, Vector2(44 * k, s.y / 2.0 - 4 * k), "Missão %d · %s" % [mission.id, status_text()], HORIZONTAL_ALIGNMENT_LEFT, s.x - 50 * k, f1, Palette.TEXT_SOFT if state != "locked" else dark)
+	var line1 := "Missão %d · %s" % [mission.id, status_text()]
+	if state == "done":
+		line1 = "Missão %d · %d pontos" % [mission.id, Game.mission_points(mission.id)]
+		# estrelas ganhas (1 a 3) à direita
+		for i in 3:
+			var c := Vector2(s.x - 14 * k - (2 - i) * 15 * k, s.y / 2.0 - 9 * k)
+			if i < Game.mission_stars(mission.id):
+				draw_colored_polygon(Icons.star_points(c, 6 * k), Palette.STAR)
+			Icons.draw(self, "star_empty", c, 6 * k, Palette.STAR_DARK)
+	draw_string(font, Vector2(44 * k, s.y / 2.0 - 4 * k), line1, HORIZONTAL_ALIGNMENT_LEFT, s.x - 100 * k, f1, Palette.TEXT_SOFT if state != "locked" else dark)
 	draw_string(bold, Vector2(44 * k, s.y / 2.0 + 14 * k), mission.place, HORIZONTAL_ALIGNMENT_LEFT, s.x - 50 * k, f2, dark)

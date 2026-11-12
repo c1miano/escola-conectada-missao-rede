@@ -38,6 +38,13 @@ R = {
     "vermelho": ["#4e1a3a", "#9c2c40", "#d9534c", "#f59a7a"],
     "amarelo": ["#7e3f1c", "#c8801e", "#f2b934", "#ffe9a0"],
     "pele": ["#6e3640", "#b56c56", "#e8a27c", "#ffd3ad"],
+    "pele_clara": ["#8a4a4a", "#d08f78", "#f6c4a2", "#ffe6cf"],
+    "pele_escura": ["#3a1e2a", "#6b3a2e", "#9a5a3c", "#c27e56"],
+    "cabelo_preto": ["#100c1c", "#221a30", "#3a2e4a"],
+    "cabelo_ruivo": ["#5e1e1e", "#a8401e", "#e0702e"],
+    "camisa_laranja": ["#6e2a1a", "#b8521e", "#ec8a2e", "#ffc070"],
+    "camisa_azul": ["#1a2a5e", "#2a4ea0", "#4a7ed6", "#8ab8f0"],
+    "camisa_vermelha": ["#4e1a3a", "#9c2c40", "#d9534c", "#f59a7a"],
     "cabelo": ["#24142a", "#45273a", "#6c4034"],
     "cabelo_loiro": ["#7a4a28", "#c08a3a", "#ecc35a"],
     "camisa": ["#14384a", "#1d6466", "#2c9886", "#68cca4"],
@@ -649,12 +656,82 @@ def presence(on):
     return out.img
 
 
+def router(on):
+    m, b = R["metal"], R["azul"]
+    c = C(20, 12)
+    for x in (3, 16):
+        c.vline(x, 0, 6, m[1])
+    c.block(1, 5, 18, 2, 4, m)
+    for i in range(4):
+        c.px(5 + i * 3, 8, R["verde_led"][1] if on else m[1])
+    c.hline(5, 6, 6, m[3])
+    top = finish(c)
+    out = C(32, 26)
+    out.paste(small_desk(), 8, 10)
+    out.paste(top, 6, 2)
+    if on:
+        for i, w in enumerate((6, 2)):
+            out.hline(16 - w // 2, 0 + i * 2, w, b[2])
+    return out.img
+
+
+def firewall(on):
+    m, r = R["metal"], R["vermelho"]
+    c = C(32, 26)
+    c.ground_shadow(10, 24, 14, 2)
+    c.block(9, 1, 14, 2, 22, m, line=False)
+    # tijolos (parede de fogo) na frente
+    for row in range(5):
+        y = 5 + row * 3
+        off = 0 if row % 2 == 0 else 2
+        for x in range(10 + off, 21, 4):
+            c.rect(x, y, 3, 2, r[2] if on else m[2])
+            c.px(x, y, r[3] if on else m[3])
+    c.px(20, 3, R["verde_led"][1] if on else m[1])
+    return finish(c).copy()
+
+
+def tester():
+    p, m = R["plastico"], R["metal"]
+    c = C(16, 12)
+    c.block(1, 2, 14, 2, 7, R["amarelo"])
+    for i in range(4):
+        c.px(3 + i * 3, 6, R["verde_led"][1])
+    c.rect(6, 0, 4, 2, m[1])
+    return on_desk(finish(c), 8, 4)
+
+
+def router_ap_desk():
+    return router(True)
+
+
+def podium():
+    m = R["madeira"]
+    c = C(16, 24)
+    c.ground_shadow(3, 21, 10, 2)
+    c.block(2, 2, 12, 3, 17, m, line=False)
+    c.rect(4, 8, 8, 4, R["azul"][2])
+    c.hline(4, 8, 8, R["azul"][3])
+    return finish(c)
+
+
+def banner():
+    y, b = R["amarelo"], R["azul"]
+    c = C(32, 12)
+    c.rect(1, 1, 30, 9, b[2])
+    c.hline(1, 1, 30, b[3])
+    c.hline(1, 9, 30, b[0])
+    for x in range(4, 28, 4):
+        c.rect(x, 4, 2, 3, y[3])
+    return finish(c)
+
+
 # ------------------------------------------------------------------ personagens ("rig" 2D)
-def character(direction, frame, anim, shirt="camisa", hair="cabelo", badge=True):
+def character(direction, frame, anim, shirt="camisa", hair="cabelo", badge=True, skin="pele", long_hair=False):
     """Monta o personagem 16x16 por partes.
     anim 'andar': 4 quadros (contato, passagem, contato, passagem) com o corpo 1 px mais baixo no contato.
     anim 'parado': 2 quadros de respiração (ombros e cabeça descem 1 px no quadro 1)."""
-    sk, hr, sh, pa = R["pele"], R[hair], R[shirt], R["calca"]
+    sk, hr, sh, pa = R[skin], R[hair], R[shirt], R["calca"]
     c = C(16, 16)
     if anim == "andar":
         bob = 1 if frame in (0, 2) else 0
@@ -706,6 +783,12 @@ def character(direction, frame, anim, shirt="camisa", hair="cabelo", badge=True)
             c.hline(4, hy, 8, hr[2])
             c.vline(4, hy, 5, hr[2])
             c.hline(5, hy + 5, 6, sk[1])
+        if long_hair:
+            if direction == "s":
+                c.vline(3, hy + 1, 6, hr[1]); c.vline(12, hy + 1, 6, hr[0])
+                c.px(4, hy + 3, hr[1]); c.px(11, hy + 3, hr[1])
+            else:
+                c.rect(4, hy, 8, 8, hr[1]); c.vline(4, hy, 8, hr[2]); c.hline(5, hy + 7, 6, hr[0])
     else:  # "w" (esquerda); "e" é o espelho
         top = 11 + bob
         # pernas: a da frente vai para a esquerda, a de trás para a direita
@@ -730,7 +813,22 @@ def character(direction, frame, anim, shirt="camisa", hair="cabelo", badge=True)
         c.px(6, hy + 3, R["metal"][0])                 # olho
         c.px(4, hy + 3, sk[2])                         # nariz
         c.hline(5, hy + 5, 5, sk[1])
+        if long_hair:
+            c.rect(8, hy, 4, 8, hr[1]); c.vline(11, hy + 1, 7, hr[0])
     return finish(c)
+
+
+# avatares que o jogador pode escolher (pele, cabelo, comprido?, camisa)
+AVATARES = [
+    ("pele", "cabelo", False, "camisa"),
+    ("pele_clara", "cabelo_loiro", True, "camisa_roxa"),
+    ("pele_escura", "cabelo_preto", False, "camisa_laranja"),
+    ("pele", "cabelo_preto", True, "camisa_azul"),
+    ("pele_clara", "cabelo_ruivo", False, "camisa_vermelha"),
+    ("pele_escura", "cabelo_preto", True, "camisa"),
+    ("pele", "cabelo_ruivo", True, "camisa_laranja"),
+    ("pele_clara", "cabelo", False, "camisa_azul"),
+]
 
 
 def bit(mood):
@@ -871,6 +969,27 @@ def main():
                 if d == "w":
                     sprites[f"{who}_direita_parado_{f}"] = img.transpose(Image.FLIP_LEFT_RIGHT)
     sprites["visitante"] = sprites["visitante_baixo_0"]
+    for i, (skin, hair, long_hair, shirt) in enumerate(AVATARES):
+        kw = {"skin": skin, "hair": hair, "long_hair": long_hair, "shirt": shirt}
+        for d, nome in names.items():
+            frames = [character(d, f, "andar", **kw) for f in range(4)]
+            walks[f"avatar_{i}_{nome}_andar"] = frames
+            for f, img in enumerate(frames):
+                sprites[f"avatar_{i}_{nome}_{f}"] = img
+                if d == "w":
+                    sprites[f"avatar_{i}_direita_{f}"] = img.transpose(Image.FLIP_LEFT_RIGHT)
+            for f in range(2):
+                img = character(d, f, "parado", **kw)
+                sprites[f"avatar_{i}_{nome}_parado_{f}"] = img
+                if d == "w":
+                    sprites[f"avatar_{i}_direita_parado_{f}"] = img.transpose(Image.FLIP_LEFT_RIGHT)
+    for on in (False, True):
+        suf = "_on" if on else "_off"
+        sprites["roteador" + suf] = router(on)
+        sprites["firewall" + suf] = firewall(on)
+    sprites["testador"] = tester()
+    sprites["palanque"] = podium()
+    sprites["faixa"] = banner()
 
     OUT.mkdir(parents=True, exist_ok=True)
     for old in OUT.glob("*.png"):
