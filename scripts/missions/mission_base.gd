@@ -115,7 +115,7 @@ func _build_layout() -> void:
 	titles.add_theme_constant_override("separation", 2)
 	top_row.add_child(titles)
 	title_label = Label.new()
-	title_label.text = "Missão %d — %s   ·   Nível %d de %d" % [mission_id, info.get("title", ""), mission_id, Game.MISSIONS.size()]
+	title_label.text = "%s   ·   Temporada %d, nível %d de %d" % [info.get("title", ""), Game.season_of(mission_id), Game.level_of(mission_id), Game.PER_SEASON]
 	title_label.add_theme_font_size_override("font_size", Game.fs(28))
 	title_label.add_theme_color_override("font_color", Palette.PRIMARY_DARK)
 	titles.add_child(title_label)
@@ -475,6 +475,42 @@ func set_targets(targets: Array) -> void:
 	_targets = targets
 
 
+## Pergunta de escolha com as opções no painel de baixo.
+## tips: explicação para cada opção errada (e "_dica" para a dica nível 2).
+func choice(question: String, options: Array, right: String, tips: Dictionary = {}, skill: String = "", next: Callable = Callable()) -> void:
+	clear_actions()
+	var rb: Array = []
+	for o in options:
+		var opt: String = o
+		var b := add_action(opt, "", func():
+			if opt == right:
+				clear_actions()
+				correct("Certo!", skill)
+				if next.is_valid():
+					next.call()
+			else:
+				try_again(tips.get(opt, "Pense de novo. Leia a pergunta com calma.")), "secondary")
+		b.custom_minimum_size.x = 0
+		if opt == right:
+			rb.append(b)
+	set_step([question, tips.get("_dica", "Pense para que serve cada opção."), "Veja a mãozinha na resposta."], rb)
+	say(question)
+
+
+## Painel de informação (janela pequena) colocado no cenário.
+func info_window(title: String, lines: Array, rel: Vector2, width: float = 380.0) -> PanelContainer:
+	var win := UiWindow.create(title, width * Game.ui_scale() / 0.7)
+	for line in lines:
+		var l := Label.new()
+		l.text = line
+		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		l.custom_minimum_size.x = (width - 30) * Game.ui_scale() / 0.7
+		win.body.add_child(l)
+	place(win.root, rel)
+	win.root.set_meta("body", win.body)
+	return win.root
+
+
 func clear_actions() -> void:
 	for c in actions.get_children():
 		c.queue_free()
@@ -701,7 +737,7 @@ func ask_question(quiz: Dictionary, on_done: Callable, header: String = "Pergunt
 
 ## Tela de história no início da missão (uma tarefa por tela). Depois chama on_start.
 func story(text: String, on_start: Callable) -> void:
-	var ov := _make_overlay("Missão %d — %s" % [mission_id, info.get("title", "")])
+	var ov := _make_overlay("Temporada %d, nível %d — %s" % [Game.season_of(mission_id), Game.level_of(mission_id), info.get("title", "")])
 	var box := ov.get_meta("box") as VBoxContainer
 	var row := HBoxContainer.new()
 	box.add_child(row)
@@ -758,7 +794,7 @@ func _finish(message: String) -> void:
 	var record := Game.record_score(mission_id, sc)
 	Sfx.play("win")
 	bit.celebrate()
-	var ov := _make_overlay("Missão %d concluída" % mission_id, 470.0)
+	var ov := _make_overlay("Nível %d concluído" % Game.level_of(mission_id), 470.0)
 	var box := ov.get_meta("box") as VBoxContainer
 	box.alignment = BoxContainer.ALIGNMENT_CENTER
 	# estrelas ganhas (1 a 3), animadas uma de cada vez
@@ -789,7 +825,7 @@ func _finish(message: String) -> void:
 	grid.columns = 2
 	grid.add_theme_constant_override("h_separation", 24)
 	grid.add_theme_constant_override("v_separation", 2)
-	var rows := [["Missão concluída (nível %d)" % mission_id, sc.base], ["Bônus de precisão", sc.precisao],
+	var rows := [["Missão concluída (T%d, nível %d)" % [Game.season_of(mission_id), Game.level_of(mission_id)], sc.base], ["Bônus de precisão", sc.precisao],
 		["Bônus de autonomia", sc.autonomia]]
 	if not guided:
 		rows.append(["Bônus do Explorador", sc.explorador])
@@ -824,7 +860,11 @@ func _finish(message: String) -> void:
 	box.add_child(row)
 	var cont := BigButton.new("Continuar", "next", "success", 80)
 	cont.pressed.connect(func():
-		Game.goto("final" if Game.all_completed() and mission_id == Game.MISSIONS.size() else "map"))
+		var t := Game.season_of(mission_id)
+		if Game.season_completed(t) and Game.level_of(mission_id) == Game.PER_SEASON:
+			Game.goto("final", {"temporada": t})
+		else:
+			Game.goto("map", {"temporada": t}))
 	row.add_child(cont)
 	var again := BigButton.new("Jogar de novo", "retry", "secondary", 80)
 	again.pressed.connect(func(): Game.goto("mission", {"id": mission_id}))

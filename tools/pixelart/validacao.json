@@ -2360,6 +2360,94 @@
       "cores": 13,
       "pixels_soltos": 18
     },
+    "cpu": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 7,
+      "pixels_soltos": 0
+    },
+    "memoria": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 6,
+      "pixels_soltos": 0
+    },
+    "ssd": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 7,
+      "pixels_soltos": 0
+    },
+    "fonte": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 10,
+      "pixels_soltos": 0
+    },
+    "placa_mae": {
+      "tamanho": [
+        32,
+        26
+      ],
+      "cores": 9,
+      "pixels_soltos": 0
+    },
+    "gabinete": {
+      "tamanho": [
+        16,
+        24
+      ],
+      "cores": 11,
+      "pixels_soltos": 0
+    },
+    "pendrive": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 7,
+      "pixels_soltos": 0
+    },
+    "hd_externo": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 6,
+      "pixels_soltos": 0
+    },
+    "nuvem": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 6,
+      "pixels_soltos": 0
+    },
+    "celular": {
+      "tamanho": [
+        16,
+        16
+      ],
+      "cores": 6,
+      "pixels_soltos": 0
+    },
+    "balcao": {
+      "tamanho": [
+        32,
+        16
+      ],
+      "cores": 8,
+      "pixels_soltos": 0
+    },
     "palanque": {
       "tamanho": [
         16,

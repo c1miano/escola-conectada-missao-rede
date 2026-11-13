@@ -58,9 +58,9 @@ func _draw() -> void:
 	var f1 := Game.fs(18)
 	var f2 := Game.fs(21)
 	var bold := Game.ui_font_bold
-	var line1 := "Missão %d · %s" % [mission.id, status_text()]
+	var line1 := "Nível %d · %s" % [Game.level_of(mission.id), status_text()]
 	if state == "done":
-		line1 = "Missão %d · %d pontos" % [mission.id, Game.mission_points(mission.id)]
+		line1 = "Nível %d · %d pontos" % [Game.level_of(mission.id), Game.mission_points(mission.id)]
 		# estrelas ganhas (1 a 3) à direita
 		for i in 3:
 			var c := Vector2(s.x - 14 * k - (2 - i) * 15 * k, s.y / 2.0 - 9 * k)

@@ -431,3 +431,130 @@ func test_progress_report() -> void:
 			img.save_png(shots_dir + "/relatorio_progresso.png")
 	else:
 		failures.append("relatorio")
+
+
+func solve_11(ms) -> void:
+	await wait(0.3)
+	# erro proposital: memória no soquete do processador
+	ms._on_part(ms.parts[1])
+	ms._on_slot("cpu")
+	await wait(0.3)
+	for i in 4:
+		var d = ms.parts[i]
+		ms._on_part(d)
+		await wait(0.1)
+		ms._on_slot(d.get_meta("part").slot)
+		await wait(0.2)
+		if i == 1:
+			await shot("m11_2_montando")
+	await wait(0.3)
+	press_action("Ligar o computador")
+	await idle()
+	await wait(0.3)
+	press_action("SSD")
+	await wait(0.3)
+	press_action("Processador")
+	await wait(0.3)
+
+
+func solve_12(ms) -> void:
+	await wait(0.3)
+	press_action("Abrir o computador sem falar nada")
+	await wait(0.2)
+	press_action("Cumprimentar e perguntar o que aconteceu")
+	await wait(0.3)
+	press_action("O computador está ligado na tomada?")
+	await wait(0.3)
+	ms._on_pc(null)
+	await wait(0.3)
+	press_action("Ligar o cabo de energia")
+	await wait(0.3)
+	await shot("m12_2_bips")
+	press_action("Falta de internet")
+	await wait(0.2)
+	press_action("Memória RAM mal encaixada")
+	await wait(0.3)
+	ms._on_pc(null)
+	await idle()
+	await wait(0.3)
+	press_action("Cabo de energia solto e memória mal encaixada. Reconectei e reencaixei.")
+	await wait(0.3)
+	await shot("m12_3_chamado")
+	press_action("Explicar o que foi feito e perguntar se está tudo bem")
+	await wait(0.3)
+
+
+func solve_13(ms) -> void:
+	await wait(0.4)
+	# erro proposital: primeiro arquivo na pasta errada
+	ms._on_file(ms.file_buttons[0])
+	ms._on_folder("Músicas")
+	await wait(0.3)
+	for fb in ms.file_buttons:
+		ms._on_file(fb)
+		await wait(0.1)
+		ms._on_folder(fb.folder)
+		await wait(0.2)
+		if fb.file == "foto_feira.jpg":
+			await shot("m13_2_arquivos")
+	await wait(0.4)
+	press_action("C:\\Usuários\\Secretaria\\Imagens\\foto_feira.jpg")
+	await wait(0.3)
+	press_action("asdfgh.docx")
+	await wait(0.2)
+	press_action("relatorio_feira_2026.docx")
+	await wait(0.3)
+
+
+func solve_14(ms) -> void:
+	await wait(0.3)
+	ms._on_pc(ms.pcs[0])                 # erro: pouca memória
+	await wait(0.2)
+	ms._on_pc(ms.pcs[1])
+	await wait(0.4)
+	await shot("m14_2_download")
+	press_action("Botão BAIXAR AGORA GRÁTIS!!!")
+	await wait(0.2)
+	press_action("Site oficial (https://editor.escola.org)")
+	await wait(0.3)
+	press_action("Aceito os termos e avançar")
+	await wait(0.3)
+	press_action("Avançar")              # erro: extras ainda marcados
+	await wait(0.2)
+	await shot("m14_3_extras")
+	press_action("Desmarcar programas extras")
+	await wait(0.3)
+	press_action("Avançar")
+	await wait(0.3)
+	press_action("Instalar")
+	await idle()
+	await wait(0.3)
+	press_action("Instalar a atualização")
+	await wait(0.3)
+
+
+func solve_15(ms) -> void:
+	await wait(0.3)
+	# marca os importantes e um que não é (erro), depois corrige
+	press_action("Arquivos temporários")
+	press_action("Pronto")
+	await wait(0.2)
+	press_action("Arquivos temporários")
+	for n in ["Trabalhos dos alunos", "Fotos da feira", "Notas e boletins"]:
+		press_action(n)
+	await wait(0.2)
+	await shot("m15_2_escolha")
+	press_action("Pronto")
+	await wait(0.4)
+	ms._on_place(ms.pc)                  # erro: o próprio computador
+	await wait(0.2)
+	ms._on_place(ms.hd)
+	ms._on_place(ms.cloud)
+	await idle()
+	await wait(0.3)
+	press_action("Automático, todo dia")
+	await idle()
+	await wait(0.3)
+	await shot("m15_3_pane")
+	ms._on_place(ms.hd)
+	await idle()

@@ -726,6 +726,122 @@ def banner():
     return finish(c)
 
 
+# ------------------------------------------------------------------ Temporada 2: peças e objetos
+def cpu_chip():
+    m, y = R["metal"], R["amarelo"]
+    c = C(16, 16)
+    c.block(2, 2, 12, 2, 10, m)
+    c.rect(5, 6, 6, 5, m[3])
+    c.rect(6, 7, 4, 3, y[2])
+    for i in range(3, 13, 2):
+        c.px(i, 1, y[1]); c.px(i, 14, y[1])
+    return finish(c)
+
+
+def ram_stick():
+    g, m = R["folha"], R["metal"]
+    c = C(16, 16)
+    c.block(1, 5, 14, 1, 6, g)
+    for x in (3, 6, 9, 12):
+        c.rect(x, 7, 2, 3, m[1])
+    for x in range(2, 14, 2):
+        c.px(x, 11, R["amarelo"][2])
+    return finish(c)
+
+
+def ssd_drive():
+    m, b = R["metal"], R["azul"]
+    c = C(16, 16)
+    c.block(2, 3, 12, 2, 9, m)
+    c.rect(4, 7, 8, 3, b[2])
+    c.hline(4, 7, 8, b[3])
+    return finish(c)
+
+
+def psu():
+    m = R["metal"]
+    c = C(16, 16)
+    c.block(1, 2, 14, 2, 11, m)
+    c.disc(7.5, 9, 3.5, R["plastico"])
+    c.px(7, 9, m[0]); c.px(8, 8, m[0])
+    c.rect(12, 5, 2, 2, R["vermelho"][2])
+    return finish(c)
+
+
+def motherboard():
+    g, m, y = R["folha"], R["metal"], R["amarelo"]
+    c = C(32, 26)
+    c.block(1, 1, 30, 2, 22, g, line=False)
+    c.rect(4, 5, 7, 7, m[1]); c.rect(5, 6, 5, 5, m[2])          # soquete
+    for x in (14, 17):
+        c.rect(x, 4, 2, 11, m[0])                                 # slots de memória
+    c.rect(4, 16, 9, 3, m[0])                                     # M.2
+    c.rect(22, 5, 6, 10, m[1])                                    # conector de energia
+    for x in range(4, 28, 4):
+        c.px(x, 21, y[2])
+    return finish(c)
+
+
+def computer_case():
+    m = R["metal"]
+    c = C(16, 24)
+    c.ground_shadow(3, 22, 10, 2)
+    c.block(2, 1, 12, 2, 19, m, line=False)
+    c.rect(4, 5, 8, 2, m[1])
+    c.disc(8, 14, 2.6, R["plastico"])
+    c.px(11, 19, R["verde_led"][1])
+    return finish(c)
+
+
+def pendrive():
+    m, b = R["metal"], R["azul"]
+    c = C(16, 16)
+    c.block(4, 2, 6, 1, 3, R["plastico"])
+    c.block(3, 5, 8, 1, 9, b)
+    c.px(6, 9, R["verde_led"][1])
+    return finish(c)
+
+
+def external_hd():
+    m = R["metal"]
+    c = C(16, 16)
+    c.ground_shadow(2, 14, 12, 1)
+    c.block(2, 3, 12, 3, 9, m)
+    c.px(11, 9, R["verde_led"][1])
+    c.hline(4, 8, 5, m[3])
+    return finish(c)
+
+
+def cloud():
+    p, b = R["plastico"], R["azul"]
+    c = C(16, 16)
+    for cx, cy, r in ((5, 9, 3.5), (9, 7, 4.2), (12, 10, 3)):
+        c.disc(cx, cy, r, p)
+    c.rect(3, 10, 11, 3, p[2])
+    c.hline(7, 7, 3, b[2]); c.px(8, 6, b[2])
+    return finish(c)
+
+
+def phone():
+    m, s = R["metal"], R["tela_on"]
+    c = C(16, 16)
+    c.block(4, 1, 8, 1, 13, m, line=False)
+    c.rect(5, 3, 6, 9, s[1])
+    c.dither(5, 3, 6, 9, s[1], s[2], 0.3)
+    c.px(7, 13, m[3]); c.px(8, 13, m[3])
+    return finish(c)
+
+
+def counter():
+    w, p = R["madeira"], R["plastico"]
+    c = C(32, 16)
+    c.ground_shadow(3, 14, 26, 2)
+    c.block(1, 1, 30, 4, 9, w)
+    c.rect(3, 7, 26, 3, w[1])
+    c.rect(20, 2, 7, 2, p[3])
+    return finish(c)
+
+
 # ------------------------------------------------------------------ personagens ("rig" 2D)
 def character(direction, frame, anim, shirt="camisa", hair="cabelo", badge=True, skin="pele", long_hair=False):
     """Monta o personagem 16x16 por partes.
@@ -988,6 +1104,9 @@ def main():
         sprites["roteador" + suf] = router(on)
         sprites["firewall" + suf] = firewall(on)
     sprites["testador"] = tester()
+    sprites.update({"cpu": cpu_chip(), "memoria": ram_stick(), "ssd": ssd_drive(), "fonte": psu(),
+                    "placa_mae": motherboard(), "gabinete": computer_case(), "pendrive": pendrive(),
+                    "hd_externo": external_hd(), "nuvem": cloud(), "celular": phone(), "balcao": counter()})
     sprites["palanque"] = podium()
     sprites["faixa"] = banner()
 

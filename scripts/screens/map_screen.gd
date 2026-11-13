@@ -19,6 +19,23 @@ const ROOMS_1 := [
 	{"id": 10, "rect": Rect2i(8, 7, 8, 5), "floor": "piso_tijolo", "top": false},
 	{"id": -1, "rect": Rect2i(16, 7, 8, 5), "floor": "piso_corredor", "top": false},
 ]
+## Temporada 2 (A Central de Suporte): mesmo prédio, outras salas. id -2 = Recepção.
+const ROOMS_T2_0 := [
+	{"id": 11, "rect": Rect2i(0, 0, 8, 5), "floor": "piso_frio", "top": true},
+	{"id": 12, "rect": Rect2i(8, 0, 8, 5), "floor": "piso_madeira", "top": true},
+	{"id": 13, "rect": Rect2i(16, 0, 8, 5), "floor": "piso_madeira", "top": true},
+	{"id": 14, "rect": Rect2i(0, 7, 8, 5), "floor": "piso_tijolo", "top": false},
+	{"id": 15, "rect": Rect2i(8, 7, 8, 5), "floor": "piso_madeira", "top": false},
+	{"id": -2, "rect": Rect2i(16, 7, 8, 5), "floor": "piso_corredor", "top": false},
+]
+const ROOMS_T2_1 := [
+	{"id": 16, "rect": Rect2i(0, 0, 8, 5), "floor": "piso_frio", "top": true},
+	{"id": 17, "rect": Rect2i(8, 0, 8, 5), "floor": "piso_tijolo", "top": true},
+	{"id": 18, "rect": Rect2i(16, 0, 8, 5), "floor": "piso_madeira", "top": true},
+	{"id": 19, "rect": Rect2i(0, 7, 8, 5), "floor": "piso_madeira", "top": false},
+	{"id": 20, "rect": Rect2i(8, 7, 8, 5), "floor": "piso_frio", "top": false},
+	{"id": -1, "rect": Rect2i(16, 7, 8, 5), "floor": "piso_corredor", "top": false},
+]
 const ROOMS := [
 	{"id": 1, "rect": Rect2i(0, 0, 8, 5), "floor": "piso_tijolo", "top": true},
 	{"id": 2, "rect": Rect2i(8, 0, 8, 5), "floor": "piso_madeira", "top": true},
@@ -40,6 +57,17 @@ const FURNITURE := {
 	9: [["rack", Vector2(0.3, 2.5)], ["rack", Vector2(1.3, 2.5)], ["rack", Vector2(2.3, 2.5)], ["roteador_on", Vector2(5.4, 2.9)]],
 	10: [["palanque", Vector2(3.4, 2.4)], ["cadeira", Vector2(1.2, 3.6)], ["cadeira", Vector2(5.6, 3.6)], ["painel_on", Vector2(5.8, 2.2)]],
 	-1: [["planta", Vector2(0.4, 3.0)], ["planta", Vector2(6.8, 3.0)]],
+	-2: [["mesa", Vector2(2.4, 3.0)], ["planta", Vector2(0.4, 3.0)], ["planta", Vector2(6.8, 3.0)]],
+	11: [["gabinete", Vector2(1.0, 2.4)], ["mesa", Vector2(3.6, 3.0)], ["armario", Vector2(7.0, 1.6)]],
+	12: [["balcao", Vector2(2.4, 2.8)], ["pc_on", Vector2(5.2, 2.2)], ["planta", Vector2(7.0, 2.6)]],
+	13: [["pc_on", Vector2(1.0, 2.2)], ["arquivo", Vector2(6.8, 2.0)], ["impressora", Vector2(4.0, 2.2)]],
+	14: [["pc_on", Vector2(0.8, 2.2)], ["pc_on", Vector2(3.4, 2.2)], ["notebook_on", Vector2(5.8, 2.2)]],
+	15: [["hd_externo", Vector2(1.2, 2.8)], ["servidor_on", Vector2(4.4, 2.2)], ["planta", Vector2(7.0, 2.6)]],
+	16: [["mesa", Vector2(1.0, 3.0)], ["bit", Vector2(5.4, 2.8)], ["armario", Vector2(7.0, 1.6)]],
+	17: [["pc_on", Vector2(1.0, 2.2)], ["pc_on", Vector2(4.4, 2.2)], ["planta", Vector2(7.0, 2.6)]],
+	18: [["notebook_on", Vector2(1.2, 2.2)], ["celular", Vector2(5.4, 2.9)], ["arquivo", Vector2(6.9, 2.0)]],
+	19: [["pc_on", Vector2(1.0, 2.2)], ["impressora", Vector2(4.4, 2.2)], ["arquivo", Vector2(6.9, 2.0)]],
+	20: [["balcao", Vector2(0.6, 2.8)], ["pc_on", Vector2(3.8, 2.2)], ["rack", Vector2(7.0, 2.4)]],
 }
 const WALL_DECOR := {
 	1: [["quadro", 3.5], ["relogio", 6.2]], 2: [["janela", 2.0], ["cartaz_rede", 5.0]],
@@ -47,13 +75,18 @@ const WALL_DECOR := {
 	5: [["quadro", 5.0], ["cartaz_wifi", 2.0]], 0: [["janela", 1.5], ["janela", 6.0]],
 	6: [["quadro", 3.0], ["relogio", 6.0]], 7: [["cartaz_rede", 2.0], ["extintor", 7.4]],
 	8: [["janela", 2.0], ["cartaz_wifi", 6.0]], 9: [["cartaz_rede", 5.0], ["relogio", 6.5]],
-	10: [["faixa", 4.0]], -1: [["janela", 2.0], ["janela", 6.0]],
+	10: [["faixa", 4.0]], -1: [["janela", 2.0], ["janela", 6.0]], -2: [["janela", 2.0], ["faixa", 5.0]],
+	11: [["cartaz_rede", 2.0], ["relogio", 6.0]], 12: [["janela", 2.0], ["quadro", 5.0]],
+	13: [["janela", 2.0], ["cartaz_rede", 6.0]], 14: [["quadro", 3.0], ["relogio", 6.5]],
+	15: [["janela", 2.0], ["cartaz_wifi", 6.0]], 16: [["quadro", 4.0]], 17: [["quadro", 3.0], ["relogio", 6.5]],
+	18: [["cartaz_wifi", 2.0], ["janela", 5.5]], 19: [["quadro", 4.0], ["relogio", 6.5]], 20: [["faixa", 4.0]],
 }
 
 var map: Control
 var bubble: Label
 var bit: BitSpeaker
 var andar := -1                     # andar mostrado (-1 = escolher pelo progresso)
+var temporada := 0                  # temporada mostrada (0 = escolher pelo progresso)
 var signs := {}
 var player_pos := Vector2.ZERO      # em pixels, relativo à origem do mapa (pés do personagem)
 var facing := "baixo"
@@ -66,9 +99,12 @@ var _route_target := 0
 
 func configure(params: Dictionary) -> void:
 	andar = int(params.get("andar", -1))
+	temporada = int(params.get("temporada", 0))
 
 
 func _rooms() -> Array:
+	if temporada == 2:
+		return ROOMS_T2_0 if andar == 0 else ROOMS_T2_1
 	return ROOMS if andar == 0 else ROOMS_1
 
 
@@ -80,9 +116,11 @@ func _room(id: int) -> Dictionary:
 
 
 func build() -> void:
+	if temporada <= 0:
+		temporada = Game.season_of(Game.next_mission())
 	if andar < 0:
-		andar = int(Game.mission_info(Game.next_mission()).get("andar", 0))
-		if not Game.floor_unlocked(andar):
+		andar = int(Game.mission_info(Game.next_mission(temporada)).get("andar", 0))
+		if not Game.floor_unlocked(andar, temporada):
 			andar = 0
 	background(Palette.FRAME_DARK)
 	var margin := MarginContainer.new()
@@ -148,7 +186,7 @@ func _top_bar(root: VBoxContainer) -> void:
 	t.add_theme_color_override("font_color", Palette.PRIMARY_DARK)
 	who.add_child(t)
 	var count := Label.new()
-	count.text = "%d de %d missões" % [Game.completed.size(), Game.MISSIONS.size()]
+	count.text = "T%d: %d de %d missões" % [temporada, Game.season_count(temporada), Game.PER_SEASON]
 	count.add_theme_color_override("font_color", Palette.TEXT_SOFT)
 	who.add_child(count)
 	var score := Control.new()
@@ -163,17 +201,24 @@ func _top_bar(root: VBoxContainer) -> void:
 	var spacer := Control.new()
 	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	row.add_child(spacer)
+	for season in [1, 2]:
+		var tt: int = season
+		var tb := button(row, "Temporada %d" % tt, "star" if tt == 2 else "map", func(): Game.goto("map", {"temporada": tt}), "star" if tt == temporada else "secondary", 54)
+		tb.tooltip_text = Game.SEASON_NAMES[tt]
+	var sep := Control.new()
+	sep.custom_minimum_size.x = 6
+	row.add_child(sep)
 	for i in FLOOR_NAMES.size():
 		var fi := i
-		var open := Game.floor_unlocked(i)
+		var open := Game.floor_unlocked(i, temporada)
 		var fb := button(row, FLOOR_NAMES[i], "home" if i == 0 else ("lock" if not open else "next"), func():
-			if Game.floor_unlocked(fi):
-				Game.goto("map", {"andar": fi})
+			if Game.floor_unlocked(fi, temporada):
+				Game.goto("map", {"andar": fi, "temporada": temporada})
 			else:
-				_say("O andar de cima abre quando você terminar a missão 5.", "pensando"), "success" if i == andar else "secondary", 54)
-		fb.tooltip_text = "Ir para o %s" % FLOOR_NAMES[i] if open else "Termine a missão 5 para abrir"
-	if Game.all_completed():
-		button(row, "Certificado", "certificate", func(): Game.goto("final"), "star", 54)
+				_say("O andar de cima abre quando você terminar o nível 5 desta temporada.", "pensando"), "success" if i == andar else "secondary", 54)
+		fb.tooltip_text = "Ir para o %s" % FLOOR_NAMES[i] if open else "Termine o nível 5 para abrir"
+	if Game.season_completed(temporada):
+		button(row, "Certificado", "certificate", func(): Game.goto("final", {"temporada": temporada}), "star", 54)
 	button(row, "Configurações", "gear", func(): Game.goto("settings"), "secondary", 54)
 	button(row, "Início", "home", func(): Game.goto("title"), "secondary", 54)
 
@@ -207,7 +252,7 @@ func _layout() -> void:
 		var floor_top := rp.position.y + 2 * T
 		sign.position = Vector2(rp.get_center().x - sign.size.x / 2.0, floor_top + (rp.end.y - floor_top) / 2.0 - sign.size.y / 2.0 + 6).round()
 	if player_pos == Vector2.ZERO:
-		var r := _room(Game.next_mission())
+		var r := _room(Game.next_mission(temporada))
 		if r.is_empty():
 			r = _rooms()[0]
 		player_pos = Vector2(_door_x(r) - T, _corridor_y())
@@ -216,16 +261,21 @@ func _layout() -> void:
 
 func _greet() -> void:
 	var msg := ""
-	if Game.all_completed():
-		msg = "A escola está toda conectada! A feira pode começar. Você pode repetir qualquer missão."
+	if Game.season_completed(temporada):
+		msg = "Você terminou a %s! Pode repetir qualquer missão para melhorar as estrelas." % Game.SEASON_NAMES[temporada]
+		if temporada == 1 and not Game.season_completed(2):
+			msg += " Que tal a Temporada 2?"
 		bit.mood = "feliz"
-	elif Game.completed.is_empty():
-		msg = "Olá, %s! Eu sou o Bit. Clique na placa do Laboratório para começar. Você também pode andar com as setas." % Game.student_name
+	elif Game.season_count(temporada) == 0:
+		if temporada == 1:
+			msg = "Olá, %s! Eu sou o Bit. Clique na placa do Laboratório para começar. Você também pode andar com as setas." % Game.student_name
+		else:
+			msg = "Bem-vindo à Central de Suporte, %s! Agora os desafios são de informática em geral. Comece pela Oficina de Montagem." % Game.student_name
 	else:
-		var nm := Game.mission_info(Game.next_mission())
+		var nm := Game.mission_info(Game.next_mission(temporada))
 		msg = "Muito bem! Agora vá para: %s." % nm.place
 		if int(nm.andar) != andar:
-			msg += " Fica no %s: use o botão lá em cima." % FLOOR_NAMES[int(nm.andar)]
+			msg += " Fica no %s: use o botão lá em cima." % FLOOR_NAMES[int(nm.andar)].to_lower()
 	_say(msg, bit.mood)
 
 
@@ -351,7 +401,7 @@ func _draw_map() -> void:
 	for r in _rooms():
 		_draw_room(r)
 	_draw_player(o)
-	if Game.all_completed():
+	if Game.season_completed(temporada):
 		_draw_party(full)
 
 
@@ -382,7 +432,7 @@ func _draw_room(r: Dictionary) -> void:
 		map.draw_rect(rp, Color(0.08, 0.1, 0.2, 0.45))
 	if r.id <= 0:
 		var font := Game.ui_font
-		var label := "Pátio da Feira" if r.id == 0 else "Escada"
+		var label: String = {0: "Pátio da Feira", -1: "Escada", -2: "Recepção"}.get(r.id, "")
 		var fsz := Game.fs(20)
 		var w := font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, fsz).x
 		var box := Rect2(Vector2(rp.get_center().x - w / 2.0 - 8, rp.position.y + 2 * T + 8), Vector2(w + 16, fsz + 10))

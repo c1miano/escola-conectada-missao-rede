@@ -2,6 +2,13 @@ extends ScreenBase
 ## Final: escola iluminada + certificado entregue pelo Bit.
 
 
+var temporada := 1
+
+
+func configure(params: Dictionary) -> void:
+	temporada = int(params.get("temporada", 1))
+
+
 func build() -> void:
 	background(Color("#1b2a4a"))
 	var glow := Control.new()
@@ -40,7 +47,7 @@ func build() -> void:
 	t.tween_property(cert, "modulate:a", 1.0, 0.4)
 	t.parallel().tween_property(cert, "scale", Vector2.ONE, 0.5).set_trans(Tween.TRANS_BACK)
 	Sfx.play("win")
-	Voice.say("Parabéns! Bit entrega o seu certificado: Técnico de Redes. Missão Escola Conectada concluída!")
+	Voice.say("Parabéns! Bit entrega o seu certificado: %s. %s concluída!" % [Game.SEASON_TITLES[temporada], Game.SEASON_NAMES[temporada]])
 
 
 func _draw_certificate(c: Control) -> void:
@@ -51,13 +58,18 @@ func _draw_certificate(c: Control) -> void:
 	c.draw_rect(Rect2(Vector2(22, 22), s - Vector2(44, 44)), Palette.PRIMARY, false, 2)
 	var lines := [
 		["CERTIFICADO", 52, Palette.PRIMARY_DARK, 90],
-		["Técnico de Redes", 46, Palette.TEXT, 170],
-		["Missão Escola Conectada concluída!", 32, Palette.SUCCESS, 225],
+		[Game.SEASON_TITLES[temporada], 46, Palette.TEXT, 170],
+		[Game.SEASON_NAMES[temporada] + " concluída!", 30, Palette.SUCCESS, 225],
 	]
 	var who: String = Game.student_name.strip_edges()
 	if who != "":
 		lines.append(["Entregue a: " + who, 28, Palette.TEXT, 280])
-	lines.append(["%d pontos  ·  %d de %d estrelas" % [Game.total_points(), Game.total_stars(), Game.MISSIONS.size() * 3], 26, Palette.PRIMARY_DARK, 312])
+	var pts := 0
+	var st := 0
+	for m in Game.season_missions(temporada):
+		pts += Game.mission_points(m.id)
+		st += Game.mission_stars(m.id)
+	lines.append(["%d pontos  ·  %d de %d estrelas" % [pts, st, Game.PER_SEASON * 3], 26, Palette.PRIMARY_DARK, 312])
 	var dd := Time.get_date_dict_from_system()
 	lines.append(["Data: %02d/%02d/%04d" % [dd.day, dd.month, dd.year], 22, Palette.TEXT_SOFT, 345])
 	for l in lines:

@@ -43,7 +43,41 @@ const MISSIONS := [
 	{"id": 10, "title": "A grande Feira de Tecnologia", "place": "Auditório da Feira", "andar": 1,
 		"script": "res://scripts/missions/mission_10.gd",
 		"topics": "Projeto completo: topologia, DHCP, gateway, DNS, Wi-Fi e diagnóstico"},
+	# ---- Temporada 2: A Central de Suporte (informática em geral)
+	{"id": 11, "title": "Monte o computador", "place": "Oficina de Montagem", "andar": 0,
+		"script": "res://scripts/missions/mission_11.gd",
+		"topics": "Hardware: processador, memória RAM, armazenamento, fonte e suas funções"},
+	{"id": 12, "title": "O computador não liga", "place": "Balcão de Atendimento", "andar": 0,
+		"script": "res://scripts/missions/mission_12.gd",
+		"topics": "Atendimento ao usuário, diagnóstico passo a passo e registro do chamado"},
+	{"id": 13, "title": "Arquivos no lugar", "place": "Secretaria Digital", "andar": 0,
+		"script": "res://scripts/missions/mission_13.gd",
+		"topics": "Sistema operacional: pastas, extensões, caminho do arquivo e nomes claros"},
+	{"id": 14, "title": "Instalar com segurança", "place": "Laboratório 2", "andar": 0,
+		"script": "res://scripts/missions/mission_14.gd",
+		"topics": "Requisitos de software, download seguro, instalação sem programas extras"},
+	{"id": 15, "title": "Backup salva o dia", "place": "Sala de Projetos", "andar": 0,
+		"script": "res://scripts/missions/mission_15.gd",
+		"topics": "Cópia de segurança: o que guardar, onde guardar, backup automático e restauração"},
+	{"id": 16, "title": "Programe o robô", "place": "Sala de Robótica", "andar": 1,
+		"script": "res://scripts/missions/mission_16.gd",
+		"topics": "Lógica de programação: sequência de comandos e repetição"},
+	{"id": 17, "title": "Se... então", "place": "Laboratório de Programação", "andar": 1,
+		"script": "res://scripts/missions/mission_17.gd",
+		"topics": "Lógica de programação: condições SE/SENÃO e prever o resultado"},
+	{"id": 18, "title": "Dados protegidos", "place": "Sala de Mídia", "andar": 1,
+		"script": "res://scripts/missions/mission_18.gd",
+		"topics": "Privacidade e LGPD, verificação em duas etapas, permissões de aplicativos"},
+	{"id": 19, "title": "Planilha da feira", "place": "Tesouraria", "andar": 1,
+		"script": "res://scripts/missions/mission_19.gd",
+		"topics": "Planilha eletrônica: células, fórmulas, SOMA, copiar fórmula e gráficos"},
+	{"id": 20, "title": "A Central de Suporte", "place": "Central de Suporte", "andar": 1,
+		"script": "res://scripts/missions/mission_20.gd",
+		"topics": "Missão final: prioridade de chamados e solução usando toda a temporada"},
 ]
+const SEASON_NAMES := {1: "Temporada 1: Missão Rede", 2: "Temporada 2: A Central de Suporte"}
+const SEASON_TITLES := {1: "Técnico de Redes", 2: "Técnico de Suporte em Informática"}
+const PER_SEASON := 10
 
 const MODE_GUIDED := "guiado"
 const MODE_EXPLORER := "explorador"
@@ -127,23 +161,55 @@ func is_completed(id: int) -> bool:
 	return completed.has(id)
 
 
+## Temporada (1 ou 2) e nível (1 a 10) de uma missão.
+func season_of(id: int) -> int:
+	return 1 + (id - 1) / PER_SEASON
+
+
+func level_of(id: int) -> int:
+	return 1 + (id - 1) % PER_SEASON
+
+
+func season_missions(season: int) -> Array:
+	return MISSIONS.filter(func(m): return season_of(m.id) == season)
+
+
 func is_unlocked(id: int) -> bool:
-	return id == 1 or is_completed(id - 1) or is_completed(id)
+	return level_of(id) == 1 or is_completed(id - 1) or is_completed(id)
 
 
-func floor_unlocked(andar: int) -> bool:
-	return andar == 0 or is_completed(5)
+## Andar de cima de cada temporada abre depois do nível 5 dela.
+func floor_unlocked(andar: int, season: int = 1) -> bool:
+	return andar == 0 or is_completed((season - 1) * PER_SEASON + 5)
+
+
+func season_completed(season: int) -> bool:
+	for m in season_missions(season):
+		if not is_completed(m.id):
+			return false
+	return true
+
+
+func season_count(season: int) -> int:
+	var n := 0
+	for m in season_missions(season):
+		if is_completed(m.id):
+			n += 1
+	return n
 
 
 func all_completed() -> bool:
-	return completed.size() >= MISSIONS.size()
+	return season_completed(1)
 
 
-func next_mission() -> int:
-	for m in MISSIONS:
-		if not is_completed(m.id):
-			return m.id
-	return MISSIONS.size()
+## Próxima missão não concluída (da temporada pedida; 0 = a temporada em que o jogador está).
+func next_mission(season: int = 0) -> int:
+	var seasons := [season] if season > 0 else [1, 2]
+	for t in seasons:
+		for m in season_missions(t):
+			if not is_completed(m.id):
+				return m.id
+	return (season if season > 0 else 1) * PER_SEASON
 
 
 func is_guided() -> bool:

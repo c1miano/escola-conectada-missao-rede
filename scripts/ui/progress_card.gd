@@ -64,12 +64,13 @@ func _draw() -> void:
 
 	# tabela das missões
 	y += 120
-	var cols := [[24, "#"], [70, "Missão"], [520, "Situação"], [680, "Estrelas"], [790, "Pontos"], [880, "Tent."], [950, "Dicas"]]
+	var cols := [[30, "#"], [84, "Missão"], [520, "Situação"], [680, "Estrelas"], [790, "Pontos"], [880, "Tent."], [950, "Dicas"]]
 	draw_rect(Rect2(Vector2(page.position.x + 16, y), Vector2(page.size.x - 32, 40)), Palette.FRAME)
 	for c in cols:
 		_txt(c[1], Vector2(page.position.x + c[0], y + 29), 26, Color.WHITE)
 	y += 40
-	var row_h := 50.0
+	var row_h := minf(50.0, 660.0 / Game.MISSIONS.size())
+	var fsz := 28 if row_h >= 44 else 22
 	for m in Game.MISSIONS:
 		var id: int = m.id
 		var e: Dictionary = Game.report.get(str(id), {})
@@ -77,17 +78,17 @@ func _draw() -> void:
 		draw_rect(Rect2(Vector2(page.position.x + 16, y), Vector2(page.size.x - 32, row_h)), bg)
 		var status := "Concluída" if Game.is_completed(id) else ("Em andamento" if not e.is_empty() else "Não iniciada")
 		var st_col := Palette.SUCCESS if Game.is_completed(id) else (Palette.ATTENTION if not e.is_empty() else Palette.TEXT_SOFT)
-		var base := Vector2(page.position.x, y + 34)
-		_txt(str(id), base + Vector2(cols[0][0], 0), 28)
-		_txt(m.title, base + Vector2(cols[1][0], 0), 26, Palette.TEXT, 440)
-		_txt(status, base + Vector2(cols[2][0], 0), 26, st_col)
-		_stars(base + Vector2(cols[3][0] + 12, -9), Game.mission_stars(id), 10)
-		_txt(str(Game.mission_points(id)) if Game.is_completed(id) else "—", base + Vector2(cols[4][0], 0), 28)
+		var base := Vector2(page.position.x, y + row_h * 0.7)
+		_txt("T%d.%d" % [Game.season_of(id), Game.level_of(id)], base + Vector2(cols[0][0] - 6, 0), fsz - 4)
+		_txt(m.title, base + Vector2(cols[1][0], 0), fsz - 2, Palette.TEXT, 430)
+		_txt(status, base + Vector2(cols[2][0], 0), fsz - 2, st_col)
+		_stars(base + Vector2(cols[3][0] + 12, -fsz * 0.3), Game.mission_stars(id), 8 if row_h < 44 else 10)
+		_txt(str(Game.mission_points(id)) if Game.is_completed(id) else "—", base + Vector2(cols[4][0], 0), fsz)
 		var dicas := 0
 		for v in e.get("dicas", [0, 0, 0]):
 			dicas += int(v)
-		_txt(str(int(e.get("tentativas", 0))) if not e.is_empty() else "—", base + Vector2(cols[5][0], 0), 28)
-		_txt(str(dicas) if not e.is_empty() else "—", base + Vector2(cols[6][0], 0), 28)
+		_txt(str(int(e.get("tentativas", 0))) if not e.is_empty() else "—", base + Vector2(cols[5][0], 0), fsz)
+		_txt(str(dicas) if not e.is_empty() else "—", base + Vector2(cols[6][0], 0), fsz)
 		y += row_h
 	draw_rect(Rect2(Vector2(page.position.x + 16, y - row_h * Game.MISSIONS.size() - 40), Vector2(page.size.x - 32, row_h * Game.MISSIONS.size() + 40)), Palette.FRAME_DARK, false, 2)
 
@@ -99,13 +100,13 @@ func _draw() -> void:
 	for m in Game.MISSIONS:
 		for h in Game.report.get(str(m.id), {}).get("habilidades", []):
 			if not str(h).begins_with("Desafio extra"):
-				skills.append("M%d · %s" % [m.id, h])
+				skills.append("T%d.%d · %s" % [Game.season_of(m.id), Game.level_of(m.id), h])
 	if skills.is_empty():
 		_txt("Ainda nenhuma. Jogue a primeira missão!", Vector2(page.position.x + 24, y + 26), 26, Palette.TEXT_SOFT)
 	var max_lines := int((page.end.y - 70 - y) / 30.0) * 2
 	for i in mini(skills.size(), max_lines):
 		var colx := page.position.x + 24 + (i % 2) * (page.size.x - 48) / 2.0
-		_txt("• " + skills[i], Vector2(colx, y + 26 + (i / 2) * 30), 22, Palette.TEXT, (page.size.x - 60) / 2.0)
+		_txt("• " + skills[i], Vector2(colx, y + 26 + (i / 2) * 28), 20, Palette.TEXT, (page.size.x - 60) / 2.0)
 	if skills.size() > max_lines:
 		_txt("... e mais %d" % (skills.size() - max_lines), Vector2(page.position.x + 24, page.end.y - 56), 22, Palette.TEXT_SOFT)
 	# rodapé

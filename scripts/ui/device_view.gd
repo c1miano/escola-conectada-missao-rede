@@ -142,6 +142,9 @@ const SPRITE := {
 	"ap": "ap", "panel": "painel", "lamp": "lampada", "sensor_pres": "sensor_pres",
 	"sensor_temp": "sensor_temp", "printer": "impressora", "router": "roteador",
 	"firewall": "firewall", "tester": "testador",
+	"cpu": "cpu", "ram": "memoria", "ssd": "ssd", "psu": "fonte", "board": "placa_mae", "case": "gabinete",
+	"pendrive": "pendrive", "hdext": "hd_externo", "cloud": "nuvem", "phone": "celular", "counter": "balcao",
+	"robot": "bit",
 }
 const HAS_STATE := ["pc", "notebook", "server", "switch", "ap", "panel", "sensor_pres", "router", "firewall"]
 
