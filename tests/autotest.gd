@@ -558,3 +558,122 @@ func solve_15(ms) -> void:
 	await shot("m15_3_pane")
 	ms._on_place(ms.hd)
 	await idle()
+
+
+func _robot_run(ms, cmds: Array) -> void:
+	for c in cmds:
+		ms._add(c)
+	await wait(0.2)
+	ms._run()
+	await idle()
+	await wait(0.4)
+
+
+func solve_16(ms) -> void:
+	await wait(0.3)
+	await _robot_run(ms, ["Andar", "Andar", "Andar"])      # erro: para antes
+	await _robot_run(ms, ["Andar"])                         # completa o programa
+	await shot("m16_2_fase2")
+	await _robot_run(ms, ["Andar", "Andar", "Andar", "Virar à direita", "Andar", "Andar"])
+	await shot("m16_3_fase3")
+	if ms.guided:
+		await _robot_run(ms, ["Repetir 3 vezes: Andar", "Virar à direita", "Repetir 3 vezes: Andar"])
+	else:
+		await _robot_run(ms, ["Repetir 3 vezes: Andar", "Virar à direita", "Repetir 3 vezes: Andar", "Repetir 3 vezes: Andar"])
+
+
+func solve_17(ms) -> void:
+	await wait(0.3)
+	press_action("SE nota < 6 ENTÃO \"Aprovado\" SENÃO \"Recuperação\"")
+	await wait(0.2)
+	press_action("SE nota >= 6 ENTÃO \"Aprovado\" SENÃO \"Recuperação\"")
+	await wait(0.3)
+	press_action("Aprovado")
+	await idle()
+	await wait(0.3)
+	await shot("m17_2_esteira")
+	if ms.guided:
+		press_action("SE cor = azul ENTÃO caixa A SENÃO caixa B")
+	else:
+		press_action("SE cor = azul OU tamanho = grande ENTÃO caixa A SENÃO caixa B")
+		await wait(0.2)
+		press_action("SE cor = azul E tamanho = grande ENTÃO caixa A SENÃO caixa B")
+	await idle()
+	await wait(0.3)
+	await shot("m17_3_erro")
+	press_action("Trocar o SENÃO para mostrar \"Senha errada\"")
+	await wait(0.3)
+
+
+func solve_18(ms) -> void:
+	await wait(0.4)
+	# erro proposital: CPF como público
+	var cpf = ms.item_buttons[1]
+	ms._on_item(cpf)
+	ms._on_bin("publico")
+	await wait(0.3)
+	for b in ms.item_buttons:
+		ms._on_item(b)
+		await wait(0.1)
+		ms._on_bin(b.get_meta("tipo"))
+		await wait(0.2)
+		if b == cpf:
+			await shot("m18_2_dados")
+	await wait(0.3)
+	press_action("Ativar verificação em duas etapas")
+	await wait(0.3)
+	press_action("428913")
+	await wait(0.2)
+	press_action("482913")
+	await wait(0.3)
+	await shot("m18_3_app")
+	press_action("Permitir só a câmera (é o flash)")
+	await wait(0.3)
+
+
+func solve_19(ms) -> void:
+	await wait(0.4)
+	ms._on_cell("B3")                    # erro proposital
+	await wait(0.2)
+	ms._on_cell("C3")
+	await wait(0.3)
+	if not ms.guided:
+		ms._on_cell("B5")
+		await wait(0.3)
+	press_action("=B2+C2")
+	await wait(0.2)
+	press_action("=B2*C2")
+	await wait(0.3)
+	press_action("Copiar a fórmula para baixo")
+	await idle()
+	await wait(0.3)
+	if not ms.guided:
+		press_action("=B3*C3")
+		await wait(0.3)
+	await shot("m19_2_planilha")
+	press_action("=SOMA(D2:D5)")
+	await wait(0.3)
+	press_action("Gráfico de linha")
+	await wait(0.2)
+	press_action("Gráfico de colunas")
+	await wait(0.5)
+	await shot("m19_3_grafico")
+
+
+func solve_20(ms) -> void:
+	await wait(0.4)
+	await shot("m20_2_fila")
+	# erro proposital: escolher um chamado menos urgente primeiro
+	for b in ms.ticket_buttons:
+		if int(b.get_meta("idx")) == ms._total - 1:
+			ms._pick(b)
+			break
+	await wait(0.3)
+	for k in ms._total:
+		for b in ms.ticket_buttons:
+			if b.visible and int(b.get_meta("idx")) == ms._done:
+				ms._pick(b)
+				break
+		await wait(0.3)
+		press_action(ms.TICKETS[ms._current].right)
+		await wait(0.4)

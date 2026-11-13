@@ -503,8 +503,10 @@ func info_window(title: String, lines: Array, rel: Vector2, width: float = 380.0
 	for line in lines:
 		var l := Label.new()
 		l.text = line
-		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		l.custom_minimum_size.x = (width - 30) * Game.ui_scale() / 0.7
+		# só linhas longas quebram (evita um laço de ajuste de tamanho em linhas curtas)
+		if str(line).length() > 34:
+			l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			l.custom_minimum_size.x = (width - 30) * Game.ui_scale() / 0.7
 		win.body.add_child(l)
 	place(win.root, rel)
 	win.root.set_meta("body", win.body)
