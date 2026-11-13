@@ -31,6 +31,26 @@ até os equipamentos, com a ajuda do assistente **Bit**, e resolve **dez missõe
 As missões 1 a 5 ficam no **térreo**; as missões 6 a 10, no **andar de cima**, que abre depois da missão 5.
 No fim, Bit entrega o certificado **"Técnico de Redes"** com a pontuação.
 
+### Temporada 2: A Central de Suporte (informática em geral)
+
+Depois da feira, a escola abre uma central de suporte e o jogador vira o técnico responsável.
+A Temporada 2 fica liberada desde o começo (aba **Temporada 2** no mapa) e vale mais pontos.
+
+| Nível | Missão | Local | Conteúdos |
+|---|---|---|---|
+| 1 | Monte o computador | Oficina de Montagem | Processador, memória RAM, SSD, fonte e placa-mãe |
+| 2 | O computador não liga | Balcão de Atendimento | Atendimento ao usuário, diagnóstico do simples ao difícil, registro do chamado |
+| 3 | Arquivos no lugar | Secretaria Digital | Pastas, extensões, caminho do arquivo, nomes claros, arquivo .exe disfarçado |
+| 4 | Instalar com segurança | Laboratório 2 | Requisitos, site oficial x anúncios, desmarcar programas extras, atualizações |
+| 5 | Backup salva o dia | Sala de Projetos | O que guardar, cópias em lugares diferentes (uma fora da escola), backup automático, restauração |
+| 6 | Programe o robô | Sala de Robótica | Sequência de comandos, depuração e repetição (com limite de blocos) |
+| 7 | Se... então | Laboratório de Programação | Condições SE/SENÃO, operador E, prever resultado, achar erro de lógica |
+| 8 | Dados protegidos | Sala de Mídia | Dados pessoais e LGPD, verificação em duas etapas, permissões de aplicativos |
+| 9 | Planilha da feira | Tesouraria | Endereço de célula, fórmulas com =, copiar fórmula, SOMA com intervalo, tipo de gráfico |
+| 10 | A Central de Suporte | Central de Suporte | Missão final: priorizar chamados e resolver cada um com o que foi aprendido |
+
+Quem conclui a Temporada 2 recebe o certificado **"Técnico de Suporte em Informática"**.
+
 ## Jogadores, pontuação e relatório de progresso
 
 - **Jogadores:** cada estudante cria seu jogador com **nome**, **avatar** (8 opções) e **modo**. Vários estudantes
@@ -40,7 +60,7 @@ No fim, Bit entrega o certificado **"Técnico de Redes"** com a pontuação.
   (menos dicas) e **bônus do Explorador**. O resultado vira **1 a 3 estrelas**. Fica guardada a melhor pontuação
   de cada missão.
 - **Relatório de progresso em imagem:** no menu inicial, **Relatório de progresso → Salvar imagem** gera um PNG
-  (1080 x 1350) com avatar, nome, data, pontos, estrelas e a situação de cada missão (pontos, tentativas, dicas)
+  (1080 x 1350) com avatar, nome, data, pontos, estrelas e a situação de cada uma das 20 missões (pontos, tentativas, dicas)
   e as habilidades demonstradas. É esse arquivo que o estudante envia ao professor.
   No Windows ele vai para a pasta de dados do jogo (que abre sozinha); no navegador, é baixado.
 
@@ -106,6 +126,7 @@ Joga todas as missões sozinho e confere se foram concluídas:
 
 ```bash
 godot -- --autoteste=1,2,3,4,5,6,7,8,9,10:guiado
+godot -- --autoteste=11,12,13,14,15,16,17,18,19,20:explorador
 ```
 
 Use `:explorador` para o outro modo. Para salvar capturas: `--autoteste=1:guiado:/pasta/capturas`.

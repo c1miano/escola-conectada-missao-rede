@@ -12,6 +12,8 @@ const PCS := [
 var pcs: Array[DeviceView] = []
 var req: PanelContainer
 var wizard: PanelContainer
+var wizard_title: Label
+var wizard_label: Label
 var _chosen: DeviceView = null
 var _step := ""
 var _extras_checked := true
@@ -87,14 +89,20 @@ func _step_download() -> void:
 func _step_wizard(page: int) -> void:
 	_step = "instalador"
 	set_objective("Instalar sem aceitar programas extras.")
-	if wizard:
-		wizard.queue_free()
 	var lines: Array
 	match page:
 		1: lines = ["Bem-vindo ao instalador do Editor de Vídeo Escolar.", "Termos de uso: o programa é gratuito para escolas."]
 		2: lines = ["Instalação rápida (recomendada!)", ("[X]" if _extras_checked else "[  ]") + " Instalar também o Navegador Turbo e a Barra de Pesquisas Mega"]
 		3: lines = ["Pasta: C:\\Programas\\Editor de Vídeo Escolar", "Pronto para instalar."]
-	wizard = info_window("Instalador — passo %d de 3" % page, lines, Vector2(0.64, 0.1), 470.0)
+	if wizard == null:
+		var w := UiWindow.create("Instalador", 470.0 * Game.ui_scale() / 0.7)
+		wizard = w.root
+		wizard_title = w.title
+		wizard_label = Label.new()
+		w.body.add_child(wizard_label)
+		place(wizard, Vector2(0.64, 0.1))
+	wizard_title.text = "Instalador — passo %d de 3" % page
+	wizard_label.text = "\n".join(PackedStringArray(lines))
 	clear_actions()
 	match page:
 		1:

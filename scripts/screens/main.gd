@@ -34,7 +34,9 @@ func _ready() -> void:
 			return
 	if shot != "":
 		_capture(shot)
-	if start.begins_with("mission:"):
+	if start.begins_with("map:"):
+		_show("map", {"temporada": int(start.get_slice(":", 1))})
+	elif start.begins_with("mission:"):
 		_show("mission", {"id": int(start.get_slice(":", 1))})
 	else:
 		_show(start, {})

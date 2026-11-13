@@ -10,7 +10,7 @@ const SPEED := 300.0
 
 ## Salas por andar: id, retângulo (em tiles), piso, se a porta fica em cima do corredor ou embaixo.
 ## id 0 = Pátio da Feira (térreo); id -1 = Escada (andar de cima).
-const FLOOR_NAMES := ["Térreo", "Andar de cima"]
+const FLOOR_NAMES := ["Térreo", "Em cima"]
 const ROOMS_1 := [
 	{"id": 6, "rect": Rect2i(0, 0, 8, 5), "floor": "piso_madeira", "top": true},
 	{"id": 7, "rect": Rect2i(8, 0, 8, 5), "floor": "piso_frio", "top": true},
@@ -219,7 +219,8 @@ func _top_bar(root: VBoxContainer) -> void:
 		fb.tooltip_text = "Ir para o %s" % FLOOR_NAMES[i] if open else "Termine o nível 5 para abrir"
 	if Game.season_completed(temporada):
 		button(row, "Certificado", "certificate", func(): Game.goto("final", {"temporada": temporada}), "star", 54)
-	button(row, "Configurações", "gear", func(): Game.goto("settings"), "secondary", 54)
+	var cfg := button(row, "", "gear", func(): Game.goto("settings"), "secondary", 54)
+	cfg.tooltip_text = "Configurações"
 	button(row, "Início", "home", func(): Game.goto("title"), "secondary", 54)
 
 
@@ -275,7 +276,7 @@ func _greet() -> void:
 		var nm := Game.mission_info(Game.next_mission(temporada))
 		msg = "Muito bem! Agora vá para: %s." % nm.place
 		if int(nm.andar) != andar:
-			msg += " Fica no %s: use o botão lá em cima." % FLOOR_NAMES[int(nm.andar)].to_lower()
+			msg += " Fica %s: use o botão lá em cima." % ("no térreo" if int(nm.andar) == 0 else "no andar de cima")
 	_say(msg, bit.mood)
 
 
